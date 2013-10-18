@@ -13,5 +13,11 @@ I already know a bit about Lisp having read _The Little Schemer_, but Clojure is
 - [Clojure](http://clojure.org/cheatsheet)
 - [Quil](https://github.com/quil/quil/raw/master/docs/cheatsheet/cheat-sheet.pdf)
 
-http://clojure.org/state
-https://github.com/unclebob/clojureOrbit
+## State and identity
+
+I am reading through this [article][4] to try to figure out how I will handle state in my code. It is very insightful. I will try to use functional programming as much as possible, but for some things this just won't work: the current GUI screen, the current state of the simulation.
+
+I looked at [clojureOrbit][5], a game written in Clojure hosted on GitHub, to see how others do this. I will probably study some other programs too.
+
+[4]: http://clojure.org/state
+[5]: https://github.com/unclebob/clojureOrbit

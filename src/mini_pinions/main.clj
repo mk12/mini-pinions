@@ -1,21 +1,22 @@
-(ns mini-pinions.core
+(ns mini-pinions.main
   (:use quil.core))
 
 (def pos (atom 0))
 
 (defn setup []
-  (smooth)
-  (background 200))
+  (smooth))
 
 (defn draw []
   (swap! pos inc)
+  (background 200)
   (ellipse (/ (width) 2) @pos 20 20))
 
 (defsketch main-sketch
   :title "Mini Pinions"
   :setup setup
   :draw draw
-  :size [500 500])
+  :size [800 600])
 
-(defn -main [& args]
+(defn -main
+  [& args]
   (main-sketch))
