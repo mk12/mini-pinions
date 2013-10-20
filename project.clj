@@ -1,4 +1,4 @@
-(defproject mk12/mini-pinions "0.1.0"
+(defproject mk12/mini-pinions "0.1"
   :description "ICS4U first summative project"
   :url "http://github.com/mk12/mini-pinions"
   :license {:name "MIT License"
