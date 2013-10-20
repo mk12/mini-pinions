@@ -1,30 +1,22 @@
+;;; Copyright 2013 Mitchell Kember. Subject to the MIT License.
+
 (ns mini-pinions.common
+  "Defines some common state and UI functions. This has to be separate from
+  mini-pinions.core to avoid cyclical dependency issues."
   (:require [quil.core :as q]))
 
-;;; There are two state objects in Mini Pinions. The first, view, is the state
-;;; associated with a particular UI screen. It includes the name of the screen
-;;; and other resources, for example images. The second, world, is the state
-;;; that gets updated every frame. This includes the simulation values for the
-;;; game as well and it can also be used for animations.
+;;; Mini Pinions UI is divided into Worlds. Each World is a separate UI view and
+;;; manages its own state. Only one World is active at a time.
 
-(defn init-state []
-  (q/set-state!
-    :view (atom nil)
-    :world (atom nil)))
+(defn init-state [] (q/set-state! :world (atom nil)))
+(defn world [] (q/state :world))
 
-(def view #(q/state :view))
-(def world #(q/state :world))
-
-(defmulti init-view :name)
-(defmulti init-world :name)
+(defmulti init :name)
+(defmulti update :name)
 (defmulti draw :name)
-(defmulti mouse-pressed :name)
-(defmulti key-pressed :name)
 
-(def draw-current-view #(draw @(view)))
-(def mouse-current-view #(mouse-pressed @(view)))
-(def key-current-view #(key-pressed @(view)))
+(defn show-world [world-name]
+  (reset! (world) (init {:name world-name})))
 
-(defn show-view [view-name]
-  (reset! (view) (init-view {:name view-name}))
-  (reset! (world) (init-world @(view))))
+(defn draw-world []
+  (draw (swap! (world) update)))

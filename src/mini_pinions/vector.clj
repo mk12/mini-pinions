@@ -1,3 +1,5 @@
+;;; Copyright 2013 Mitchell Kember. Subject to the MIT License.
+
 (ns mini-pinions.vector
   (:require [clojure.math.numeric-tower :as m]))
 
