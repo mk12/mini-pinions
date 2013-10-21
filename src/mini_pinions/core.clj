@@ -10,14 +10,15 @@
 (defn setup []
   (q/smooth)
   (q/ellipse-mode :radius)
-  (c/init-state)
-  (c/show-world :menu))
+  (c/init-state :menu))
 
 (q/defsketch sketch
   :title "Mini Pinions"
-  :size [800 600]
+  :size [c/width c/height]
   :renderer :opengl
   :setup setup
+  :mouse-pressed c/input-world
+  :key-pressed c/input-world
   :draw c/draw-world)
 
-(defn -main [& args] (sketch))
+(defn -main [] (sketch))

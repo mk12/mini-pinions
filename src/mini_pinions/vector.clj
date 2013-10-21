@@ -1,7 +1,17 @@
 ;;; Copyright 2013 Mitchell Kember. Subject to the MIT License.
 
 (ns mini-pinions.vector
-  (:require [clojure.math.numeric-tower :as m]))
+  "Provides essential Euclidean vector operations."
+  (:import java.lang.Math))
+
+;;; These functions are elegant, but very, very inefficient. That being said,
+;;; "We should forget about small efficiencies, say about 97% of the time:
+;;; premature optimization is the root of all evil" (Donald Knuth).
+
+(defn make [x y] [^float x ^float y])
+
+(defn x [v] (nth v 0))
+(defn y [v] (nth v 1))
 
 (defn add [u v]
   (map + u v))
@@ -10,16 +20,19 @@
   (map - u v))
 
 (defn scale [k v]
-  (map #(* k %) v))
+  (map #(* % k) v))
+
+(defn div [k v]
+  (map #(/ % k) v))
 
 (defn dot [u v]
   (reduce + (map * u v)))
 
-(defn norm [v]
-  (m/sqrt (dot v v)))
-
 (defn normSq [v]
   (dot v v))
+
+(defn norm [v]
+  (Math/sqrt (normSq v)))
 
 (defn normalize [v]
   (scale (/ (norm v)) v))

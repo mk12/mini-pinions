@@ -46,3 +46,11 @@ Huzzah! I have finally got a system working where the state of the UI and of the
 [8]: http://stackoverflow.com/questions/19461857/modelling-game-ui-screens-in-clojure
 [9]: http://stevelosh.com/blog/2012/07/caves-of-clojure-02/
 [10]: http://www.infoq.com/presentations/Value-Identity-State-Rich-Hickey
+
+## Taking flight
+
+The main menu now has some nifty buttons. But it's time to focus on the main game. I don't know when the halfway checkpoint deadline is, but it probably isn't too far away. A thought occurred to me as I imagined the hills and valleys of Fledge's world (the bird is officially called Fledge, by the way): it looks an awful lot like a sinusoidal curve. Forget Bézier and other similarly complicated stuff -- I will just use trig functions to create the landscape!
+
+I found [a blog dedicated to Tiny Wings physics][11] -- imagine that! After actually reading it, though, I realized that it isn't very useful to me.
+
+[11]: http://tinywingsphysics.blogspot.ca
