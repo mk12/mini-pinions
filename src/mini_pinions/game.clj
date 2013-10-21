@@ -21,8 +21,8 @@
   "Calculates the y-value of a segment given an x-value."
   [seg x]
   (* (:amplitude seg)
-     (Math/Ccos (* (:k seg)
-                   (- x (:phase seg))))))
+     (Math/cos (* (:k seg)
+                  (- x (:phase seg))))))
 
 (defn calc-segments-k
   "Calculates the horizontal compression factors for each segment."
@@ -70,15 +70,9 @@
        :phase 0
        :cycles 5}])})
 
-;; (defn seg-y
-;;   [seg x]
-;;   (* (:amplitude seg)
-;;      (Math/cos (* (:k seg)
-;;                   (- x (:phase seg))))))
-
-;; (defn path-y
-;;   [level x]
-;;   (let [seg (first (drop-while #(< (:end) x) (:segments level)))]
+(defn path-y
+  [level x]
+  (let [seg (last (take-while #(> (:end %) x) (:segments level)))]))
 
 
 ;;;;; Bird
