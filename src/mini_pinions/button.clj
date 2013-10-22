@@ -1,14 +1,9 @@
 ;;; Copyright 2013 Mitchell Kember. Subject to the MIT License.
 
 (ns mini-pinions.button
-  (:require [quil.core :as q]))
-
-; CORE CORNERS!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-
-;;;;; Constants
-
-(def button-text-size 12)
-(def button-text-color 255)
+  (:require [quil.core :as q]
+            [mini-pinions.common :as c]
+            [mini-pinions.vector :as v]))
 
 ;;;;; Factories
 
@@ -22,8 +17,26 @@
      :top-left (v/sub center half-size)
      :bottom-right (v/add center half-size)
      :color color
-     :hover-color (map #(* 0.7 %) color)}))
+     :hover-color (map #(* 0.7 %) color)
+     :text-size (/ (v/y size) 2)
+     :text-color (if (> (reduce + color) (* 255 3 0.5)) 0 255)}))
   
+(defn make-button-stack
+  "Makes a stack of buttons on top of each other given an enclosing rectangle
+  (defined by center and size), an amount of padding between buttons, and a
+  sequence of maps with the keys :text, :action, and :color."
+  [center size padding button-defs]
+  (let [n-buttons (count button-defs)
+        total-padding (* (- n-buttons 1) padding)
+        height (/ (- (v/y size) total-padding) n-buttons)
+        button-size (v/make (v/x size) height)
+        start (v/add (v/sub center (v/div 2 size))
+                     (v/make 0 (/ height 2)))]
+    (map #(make-button (:text %1) (:action %1) (c/dbg %2) button-size (:color %1))
+         button-defs
+         (map #(v/add (v/make 0 (* (+ height padding) %))
+                      start)
+              (range n-buttons)))))
 
 ;;;;; Mouse
 
@@ -56,9 +69,9 @@
                   (:hover-color button)
                   (:color button)))
   (c/draw-rect (:top-left button) (:bottom-right button))
-  (q/fill button-text-color)
+  (q/fill (:text-color button))
   (q/text-align :center :center)
-  (q/text-size button-text-size)
+  (q/text-size (:text-size button))
   (c/draw-text (:text button) (:center button))
   (q/pop-style))
 

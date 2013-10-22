@@ -10,7 +10,7 @@
 (defn setup []
   (q/smooth)
   (q/ellipse-mode :radius)
-  ;(q/rect-mode :corners)
+  (q/rect-mode :corners)
   (c/init-state :menu))
 
 (q/defsketch sketch
