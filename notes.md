@@ -54,4 +54,7 @@ The main menu now has some nifty buttons. But it's time to focus on the main gam
 
 I found [a blog dedicated to Tiny Wings physics][11] – imagine that! After actually reading it, though, I realized that it isn't very useful to me.
 
+**[21 Oct. 2013]**
+It may not be especially fast, but I am making progress. I love Clojure, but functional programming tends to twist your brain into a pretzel when you are (like me) fairly new to it. That isn't to say that I am much less productive with it than I would be with Java or some other OOP language at the moment – the stuff I am modelling right now (the curves that define a level) really does take quite a bit of thinking. I think I have implemented it in the best way possible. The _divide and conquer_ method is really helping me.
+
 [11]: http://tinywingsphysics.blogspot.ca

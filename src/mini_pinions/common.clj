@@ -12,6 +12,10 @@
 (def center-x (/ width 2))
 (def center-y (/ height 2))
 
+;;;;; Macros
+
+(defmacro dbg [x] `(let [x# ~x] (println "dbg:" '~x "=" x#) x#))
+
 ;;;;; Convenience functions
 
 (defn draw-rect [[x y] [w h]]

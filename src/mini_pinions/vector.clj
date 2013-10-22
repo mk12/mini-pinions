@@ -10,6 +10,8 @@
 
 (defn make [x y] [^float x ^float y])
 
+(def zero (make 0 0))
+
 (defn x [v] (nth v 0))
 (defn y [v] (nth v 1))
 
