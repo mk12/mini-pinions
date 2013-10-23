@@ -21,6 +21,9 @@
 (defn draw-rect [[x y] [w h]]
   (q/rect x y w h))
 
+(defn draw-ellipse [[x y] r]
+  (q/ellipse x y r r))
+
 (defn draw-text [s [x y]]
   (q/text s x y))
 

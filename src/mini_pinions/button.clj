@@ -26,7 +26,7 @@
      :bottom-right (v/add center half-size)
      :color color
      :hover-color (map #(* hover-mult %) color)
-     :text-size (/ (v/y size) 2)
+     :text-size (v/y half-size)
      :text-color (if dark 255 0)}))
   
 (defn make-button-stack
@@ -38,14 +38,13 @@
         total-padding (* (- n-buttons 1) padding)
         height (/ (- (v/y size) total-padding) n-buttons)
         button-size (v/make (v/x size) height)
-        start (v/make (v/x center)
-                      (- (v/y center)
-                         (/ (- (v/y size) height) 2)))]
+        start-y (- (v/y center) (/ (- (v/y size) height) 2))
+        start (v/make (v/x center) start-y)
+        center-n #(v/add start (v/make 0 (* (+ height padding) %)))
+        centers (map center-n (range n-buttons))]
     (map #(make-button (:text %1) (:action %1) %2 button-size (:color %1))
          button-defs
-         (map #(v/add (v/make 0 (* (+ height padding) %))
-                      start)
-              (range n-buttons)))))
+         centers)))
 
 ;;;;; Mouse
 

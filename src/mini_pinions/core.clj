@@ -16,7 +16,7 @@
 (q/defsketch sketch
   :title "Mini Pinions"
   :size [c/width c/height]
-  :renderer :opengl
+  :renderer :p3d
   :setup setup
   :mouse-pressed c/input-world
   :key-pressed c/input-world
