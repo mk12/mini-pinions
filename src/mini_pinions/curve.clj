@@ -23,11 +23,13 @@
 (defn curve-y
   "Calculates the y-value of the curve given an x-value."
   [curve x]
-  (-> (- x (:p curve))
-      (* (:k curve))
-      Math/cos
-      (* (:a curve))
-      (+ (:q curve))))
+  (let [x-p (- x (:p curve))]
+    (if (<= x-p (:w curve))
+      (-> x-p
+          (* (:k curve))
+          Math/cos
+          (* (:a curve))
+          (+ (:q curve))))))
 
 ;;;;; Path
 
@@ -61,7 +63,7 @@
 (defn path-y
   "Calculate the y-value of the path given an x-value."
   [path x]
-  (let [curve (last (take-while #(<= (:p %) x) path))]
+  (if-let [curve (last (take-while #(<= (:p %) x) path))]
     (curve-y curve x)))
 
 ;;;;; Draw
@@ -73,4 +75,4 @@
   (doseq [x (range start (+ end resolution) resolution)]
     (if-let [y (path-y path x)]
       (q/curve-vertex x y)))
-  (q/end-shape))
+  (q/end-shape :close))

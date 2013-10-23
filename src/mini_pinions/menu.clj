@@ -20,23 +20,23 @@
     (v/make 300 300)
     button-margin
     [{:text "Play"
-      :action :game
+      :action {:name :game, :level 1}
       :color [50 50 50]}
      {:text "Instructions"
-      :action :instructions
+      :action {:name :instructions}
       :color [255 255 255]}
      {:text "Levels"
-      :action :level-selector
+      :action {:name :level-selector}
       :color [50 50 50]}
      {:text "Level Editor"
-      :action :level-editor
+      :action {:name :level-editor}
       :color [255 255 255]}]))
 
 ;;;;; World
 
 (defmethod c/input :menu [world]
   (if-let [btn (b/selected-button buttons)]
-    (c/make-world (:action btn))
+    (c/init (:action btn))
     world))
 
 (defmethod c/draw :menu [world]
