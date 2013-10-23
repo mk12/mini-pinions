@@ -62,6 +62,6 @@ It may not be especially fast, but I am making progress. I love Clojure, but fun
 ## Still taking flight
 
 **[22 October 2013]**
-The halfway checkpoint deadline, 24 October 2013, is looming on the horizon like a big thing that looms, so I am trying to get things done quickly. I now have a nice set of button functions that make it super easy to use buttons in the mani menu, and I will also use them in other Worlds. But now I am entirely focused on the Game world -- I need to get Fledge moving!
+The halfway checkpoint deadline, 24 October 2013, is looming on the horizon like a big thing that looms, so I am trying to get things done quickly. I now have a nice set of button functions that make it super easy to use buttons in the mani menu, and I will also use them in other Worlds. But now I am entirely focused on the Game world – I need to get Fledge moving!
 
 It is 1:15 a.m., and Fledge is moving! He is racing along horizontally, allowing the sine landforms to be traced in all their glory. All that is left for the halfway checkpoint is the physics.
