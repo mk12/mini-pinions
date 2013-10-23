@@ -21,13 +21,16 @@
     button-margin
     [{:text "Play"
       :action :game
-      :color [50 180 255]}
+      :color [50 50 50]}
      {:text "Instructions"
       :action :instructions
-      :color [255 100 50]}
+      :color [255 255 255]}
      {:text "Levels"
       :action :level-selector
-      :color [50 180 50]}]))
+      :color [50 50 50]}
+     {:text "Level Editor"
+      :action :level-editor
+      :color [255 255 255]}]))
 
 ;;;;; World
 

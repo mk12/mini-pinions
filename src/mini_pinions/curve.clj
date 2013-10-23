@@ -64,6 +64,8 @@
   (let [curve (last (take-while #(<= (:p %) x) path))]
     (curve-y curve x)))
 
+;;;;; Draw
+
 (defn draw-path
   "Draws a section of a path given by [start,end] with resolution vertices."
   [path start end resolution]

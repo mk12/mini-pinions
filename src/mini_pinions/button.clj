@@ -1,25 +1,33 @@
 ;;; Copyright 2013 Mitchell Kember. Subject to the MIT License.
 
 (ns mini-pinions.button
+  "Manages making buttons, detecting clicks on them, and drawing them."
   (:require [quil.core :as q]
             [mini-pinions.common :as c]
             [mini-pinions.vector :as v]))
+
+;;;;; Constants
+
+(def contrast-threshold 0.4)
+(def button-hover-factor 0.3)
 
 ;;;;; Factories
 
 (defn make-button
   "Makes a new button and adds some calculated properties."
   [text action center size color]
-  (let [half-size (v/div 2 size)]
+  (let [half-size (v/div 2 size)
+        dark (< (reduce + color) (* 255 3 contrast-threshold))
+        hover-mult (+ 1 (* (if dark 1 -1) button-hover-factor))]
     {:text text
      :action action
      :center center
      :top-left (v/sub center half-size)
      :bottom-right (v/add center half-size)
      :color color
-     :hover-color (map #(* 0.7 %) color)
+     :hover-color (map #(* hover-mult %) color)
      :text-size (/ (v/y size) 2)
-     :text-color (if (> (reduce + color) (* 255 3 0.5)) 0 255)}))
+     :text-color (if dark 255 0)}))
   
 (defn make-button-stack
   "Makes a stack of buttons on top of each other given an enclosing rectangle
@@ -30,9 +38,10 @@
         total-padding (* (- n-buttons 1) padding)
         height (/ (- (v/y size) total-padding) n-buttons)
         button-size (v/make (v/x size) height)
-        start (v/add (v/sub center (v/div 2 size))
-                     (v/make 0 (/ height 2)))]
-    (map #(make-button (:text %1) (:action %1) (c/dbg %2) button-size (:color %1))
+        start (v/make (v/x center)
+                      (- (v/y center)
+                         (/ (- (v/y size) height) 2)))]
+    (map #(make-button (:text %1) (:action %1) %2 button-size (:color %1))
          button-defs
          (map #(v/add (v/make 0 (* (+ height padding) %))
                       start)
