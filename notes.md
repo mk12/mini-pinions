@@ -75,7 +75,7 @@ I was having some trouble getting the landscape to extend all the way to the edg
 
 > The first and last points in a series of `curveVertex()` lines will be used to guide the beginning and end of a the curve. A minimum of four points is required to draw a tiny curve between the second and third points.
 
-I spent the next while getting the transformations to work. It took a bit of trial and error, and I eventually discovered that Processing transformations are applied in reverse order, just like in OpenGL (it is because it uses column-major matrices, apparently). Here you can see the some of the critical research that went into the development of the transformations. This rare specimen possesses exception poise, for a sketch. I will let the drawing speak for itself:
+I spent the next while getting the transformations to work. It took a bit of trial and error, and I eventually discovered that Processing transformations are applied in reverse order, just like in OpenGL (it is because it uses column-major matrices, apparently). Here you can see the some of the critical research that went into the development of the transformations. This rare specimen possesses exceptional poise, for a sketch. I will let the drawing speak for itself:
 
 ![](images/transformations.jpg)
 
