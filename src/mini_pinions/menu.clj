@@ -16,7 +16,7 @@
 
 (def buttons
   (b/make-button-stack
-    (v/make c/center-x c/center-y)
+    (v/make c/half-width c/half-height)
     (v/make 300 300)
     button-margin
     [{:text "Play"

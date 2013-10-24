@@ -9,14 +9,17 @@
 
 (def width 800)
 (def height 600)
-(def center-x (/ width 2))
-(def center-y (/ height 2))
+(def half-width (/ width 2))
+(def half-height (/ height 2))
 
 ;;;;; Macros
 
 (defmacro dbg [x] `(let [x# ~x] (println "dbg:" '~x "=" x#) x#))
 
 ;;;;; Convenience functions
+
+(defn draw-line [[x1 y1] [x2 y2]]
+  (q/line x1 y1 x2 y2))
 
 (defn draw-rect [[x y] [w h]]
   (q/rect x y w h))
