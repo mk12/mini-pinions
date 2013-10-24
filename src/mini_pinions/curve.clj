@@ -21,7 +21,7 @@
      :w width}))
 
 (defn curve-y
-  "Calculates the y-value of the curve given an x-value."
+  "Calculates the y-value of the curve at a particular x-value."
   [curve x]
   (let [x-p (- x (:p curve))]
     (if (<= x-p (:w curve))
@@ -31,8 +31,10 @@
           (* (:a curve))
           (+ (:q curve))))))
 
-(defn curve-slope
-  "Calculates the y-value of the curve given an x-value."
+(defn curve-m
+  "Calculates the instantaneous slope of the curve at a particular x-value. The
+  formula was obtained by using Wolfram Alpha to find the derivative of the
+  transformed cosine function."
   [curve x]
   (let [x-p (- x (:p curve))]
     (if (<= x-p (:w curve))
@@ -70,13 +72,13 @@
         (reductions curve-end start curve-defs)
         curve-defs))
 
-(defn path-y-fn
-  "Calculate the y-value of the path at a particular x-value."
-  [path x fnc]
+(defn path-val
+  "Calculate the y-value or m-value of the path at a particular x-value."
+  [path x y-or-m]
   (if-let [curve (last (take-while #(<= (:p %) x) path))]
-    (fnc curve x)))
+    ((y-or-m {:y curve-y :m curve-m}) curve x)))
 
-(def path-y (memoize path-y-fn))
+(def path-y (memoize path-val))
 
 ;;;;; Draw
 
@@ -87,7 +89,7 @@
   (q/vertex start 0)
   (doseq [x (concat (cons start (range start (+ end resolution) resolution))
                     [end])]
-    (if-let [y (path-y path x curve-y)]
-      (q/curve-vertex x y)))
+    (if-let [y (path-y path x :y)]
+      (q/vertex x y)))
   (q/vertex end 0)
   (q/end-shape :close))

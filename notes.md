@@ -94,3 +94,9 @@ It is 1:28 a.m. and I just experienced a moment in which I wanted to smash my he
 Finally! It actually feels like _Tiny Wi_---I mean, like I intended it to feel. I still need to fine-tune some constants, but it is already fun and challenging. Some of the code is a bit of a mess, so I will need to go over it carefully and refactor some things.
 
 [12]: https://github.com/mk12/luminosity
+
+## Halfway there
+
+The game was running pretty slow on the school computers. I optimized the vectors slightly in case that was the trouble, but it wasn't. The bottleneck seems to always be graphics. I didn't want to have unacceptable low-resolution curves, so I tried drawing straight lines instead of spline curves to join the sine points, and performance went way up.
+
+The physics is basically done, other than the fact that I need to rewrite it in smaller functions because it is pretty messy right now.

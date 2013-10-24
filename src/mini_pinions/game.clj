@@ -10,20 +10,20 @@
 
 ;;;;; Constants
 
-(def fledge-radius 3)
+(def fledge-radius 5)
 (def g-fly 0.2)
 (def g-fall 0.9)
 (def elasticity 0.6)
-(def path-friction 0.99)
-(def min-x-speed 1.3)
-(def rebound-threshold 0.7)
+(def path-friction 0.987)
+(def min-x-speed 1.2)
+(def rebound-threshold 0.8)
 
-(def curve-resolution 20)
+(def curve-resolution 8)
 
 ;;;;; Levels
 
 (def levels
-  [{:start (v/make 402 (+ 500 fledge-radius))
+  [{:start (v/make 400 (+ 300 fledge-radius))
     :path
     (u/make-path
       v/zero
@@ -47,10 +47,10 @@
         :direction :down
         :half-cycles 1
         :width 70}
-       {:height 50
-        :direction :down
-        :half-cycles 1200
-        :width 100000}])}])
+       {:height 200
+        :direction :up
+        :half-cycles 600
+        :width 150000}])}])
 
 ;;;;; Physics
 
@@ -79,10 +79,9 @@
 (defn path-scale
   "Calculates the scale factor that should be used based on position."
   [center]
-  (let [sky (- (v/y center) c/height)]
-    (if (pos? sky)
-      (- 1 (* sky 0.0001))
-      1)))
+  (if (> (v/y center) c/height)
+    (/ c/height (v/y center))
+    1))
 
 (defn transform
   "Applies all necessary transformations to center the view around the given
@@ -117,10 +116,10 @@
   (let [accel (v/make 0 (- (if (q/mouse-state) g-fall g-fly)))
         new-vel (v/add (:vel world) accel)
         new-pos (v/add (:pos world) new-vel)
-        path-y (u/path-y (:path (:level-data world)) (v/x new-pos) u/curve-y)
+        path-y (u/path-val (:path (:level-data world)) (v/x new-pos) :y)
         min-y (+ path-y fledge-radius)]
     (if (< (v/y new-pos) min-y)
-      (let [tangent-m (u/path-y (:path (:level-data world)) (v/x new-pos) u/curve-slope)
+      (let [tangent-m (u/path-val (:path (:level-data world)) (v/x new-pos) :m)
             tangent (v/normalize (v/make 1 tangent-m))
             normal-m (- (/ tangent-m))
             normal (v/normalize (if normal-m (v/make 1 normal-m) (v/make 0 1)))
@@ -135,9 +134,6 @@
                  :vel (keep-going (v/scale (* (v/norm new-vel) path-friction) tangent) min-x-speed))
             (assoc world :pos new-new-pos :vel (keep-going (v/scale elasticity reflected-vel) min-x-speed))))
       (assoc world :pos new-pos :vel new-vel))))
-
-;Ray x' $ normalize $ v <-> 2 * v <.> n *> n
-
 
 (defmethod c/draw :game [world]
   (let [pos (:pos world)
