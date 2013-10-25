@@ -16,7 +16,7 @@
 (def elasticity 0.6)
 (def path-friction 0.987)
 (def min-x-speed 1.2)
-(def rebound-threshold 0.8)
+(def rebound-threshold 0.5)
 
 (def curve-resolution 8)
 
@@ -121,6 +121,7 @@
     (if (< (v/y new-pos) min-y)
       (let [tangent-m (u/path-val (:path (:level-data world)) (v/x new-pos) :m)
             tangent (v/normalize (v/make 1 tangent-m))
+            tdot (v/dot (v/normalize new-vel) tangent)
             normal-m (- (/ tangent-m))
             normal (v/normalize (if normal-m (v/make 1 normal-m) (v/make 0 1)))
             dot (v/dot (v/normalize new-vel) normal)
@@ -128,7 +129,7 @@
             reflected-dir (v/normalize (v/sub (v/normalize new-vel) scaled-normal))
             reflected-vel (v/scale (v/norm new-vel) reflected-dir)
             new-new-pos (v/make (v/x new-pos) min-y)]
-        (if (< (Math/abs dot) rebound-threshold)
+        (if (> tdot rebound-threshold)
           (assoc world
                  :pos new-new-pos
                  :vel (keep-going (v/scale (* (v/norm new-vel) path-friction) tangent) min-x-speed))
