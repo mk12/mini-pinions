@@ -69,23 +69,23 @@ It is 1:15 a.m., and Fledge is moving! He is racing along horizontally, allowing
 ## A sinusoidal interlude
 
 **[23 October 2013]**
-The game is coming along well. I experimented with _memoization_, which uses a cache to avoid calling a function on the same arguments to improve performance at the expense of memory usage. Without that, I am calculating the same y-values for the same cosine graphs many, many times. However, when I tried using the technique (which is so easy in clojure: given a function `fn`, you just use `(memoize fn)` and it does it all for you!), it actually didn't make it go any faster even though the memoization was working (I checked), leading me to believe that drawing is still the bottleneck. The OpenGL renderer can draw much faster, but it doesn't work on the computers. I will just have to make do with low-resolution curves.
+The game is coming along well. I experimented with _memoization_, which uses a cache to avoid calling a function on the same arguments to improve performance at the expense of memory usage. Without that, I am calculating the same y-values for the same cosine graphs many, many times. However, when I tried using the technique (which is so easy in clojure: given a function `fn`, you just use `(memoize fn)` and it does it all for you!), it actually didn't make it go any faster even though the memoization was working (I checked), leading me to believe that drawing is still the bottleneck. The OpenGL renderer can draw much faster, but it doesn't work on the school computers. I will just have to make do with low-resolution curves.
 
 I was having some trouble getting the landscape to extend all the way to the edges of the window, but the problem disappeared when I used regular line vertices instead of curve vertices. I spent way too long puzzling over this! I am so stupid for not reading the Processing documentation sooner:
 
 > The first and last points in a series of `curveVertex()` lines will be used to guide the beginning and end of a the curve. A minimum of four points is required to draw a tiny curve between the second and third points.
 
-I spent the next while getting the transformations to work. It took a bit of trial and error, and I eventually discovered that Processing transformations are applied in reverse order, just like in OpenGL (it is because it uses column-major matrices, apparently). Here you can see the some of the critical research that went into the development of the transformations. This rare specimen possesses exceptional poise, for a sketch. I will let the drawing speak for itself:
+I spent the next while getting the transformations to work. It took a bit of trial and error, and I eventually discovered that Processing transformations are applied in reverse order, just like in OpenGL (it is because it uses column-major matrices, apparently). Here you can see the some of the critical research that went into the development of the transformations. I will let the drawing speak for itself:
 
-![](images/transformations.jpg)
+![Preliminary transformation sketches](images/transformations.jpg)
 
 All that is left for the halfway point is the physics (have I said this before?). I went on <http://graph.tk> to do a bit of experimenting: at a given point on my sine curve, what is the normal? It is perpendicular (negative reciprocal) to the tangent, which is given by the derivative. I entered that in, and a vertically reflected secant graph shows up. Interesting. The derivative of the sine function is the cosine function, its reciprocal is secant, and the negative reflects it.
 
-![](images/sine-normal.png)
+![Sine wave, its derivative, and the negative reciprocal of the derivative](images/sine-normal.png)
 
 This talk of normals and reflected velocity vectors is all well and good, but what point on the sine graph do I use for this? I tried the one directly underneath Fledge, but this ends up looking strange – I may have to leave it like this and make Fledge very tiny so that it doesn't look so bad, for now. But the real solution is finding the closest point on the sine graph to Fledge. Below, the red and green lines intersect at the point where Fledge is. The orange curve is the distance between Fledge and the sine graph, and the pink curve is its square. Both have the same minimum, which is where the cyan curve (the derivative of the pink one) crosses the x-axis. I don't know how to solve that last one, so I will have to use a numerical approach. I am amazed at how useful everything I've recently learned in Advanced Functions has been so far in this project.
 
-![](images/closest-point.png)
+![Shortest difference from point to sine curve](images/closest-point.png)
 
 I will deal with this later! For now, I want my halfway checkpoint to be somewhat playable. I have written code to calculate the reflected velocity on a collision with the path (I took it from [Luminosity][12], where I was using the algorithm to reflect rays off mirror surfaces). Now I am modifying it so that if the dot product of velocity and the normal is sufficiently small (close to being parallel), Fledge will slide along instead of bouncing.
 
@@ -97,6 +97,7 @@ Finally! It actually feels like _Tiny Wi_---I mean, like I intended it to feel. 
 
 ## Halfway there
 
+**[24 Oct. 2013]**
 The game was running pretty slow on the school computers. I optimized the vectors slightly in case that was the trouble, but it wasn't. The bottleneck seems to always be graphics. I didn't want to have unacceptable low-resolution curves, so I tried drawing straight lines instead of spline curves to join the sine points, and performance went way up.
 
 The physics is basically done, other than the fact that I need to rewrite it in smaller functions because it is pretty messy right now.
