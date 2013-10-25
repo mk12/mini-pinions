@@ -18,7 +18,8 @@
   [text action center size color]
   (let [half-size (v/div 2 size)
         dark (< (reduce + color) (* 255 3 contrast-threshold))
-        hover-mult (+ 1 (* (if dark 1 -1) button-hover-factor))]
+        sign (if dark 1 -1)
+        hover-mult (+ 1 (* sign button-hover-factor))]
     {:text text
      :action action
      :center center

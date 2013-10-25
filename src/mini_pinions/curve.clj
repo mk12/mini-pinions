@@ -34,7 +34,7 @@
 (defn curve-m
   "Calculates the instantaneous slope of the curve at a particular x-value. The
   formula was obtained by using Wolfram Alpha to find the derivative of the
-  transformed cosine function."
+  transformed cosine function in curve-y."
   [curve x]
   (let [x-p (- x (:p curve))]
     (if (<= x-p (:w curve))
@@ -56,40 +56,39 @@
   [start curve-def]
   (let [sign ((:direction curve-def) {:up 1 :down -1})
         odd (mod (:half-cycles curve-def) 2)
-        end-y (* sign odd (:height curve-def))]
-    (v/add start
-           (v/make (:width curve-def) end-y))))
+        end-y (* sign odd (:height curve-def))
+        delta (v/make (:width curve-def) end-y)]
+    (v/add start delta)))
 
 (defn make-path
   "Makes a sequence of curves by joining the curve definitions end to end. The
   position of the first curve must be provided."
   [start curve-defs]
-  (map #(make-curve %1
-                    (:height %2)
-                    (:direction %2)
-                    (:half-cycles %2)
-                    (:width %2))
-        (reductions curve-end start curve-defs)
-        curve-defs))
+  (map #(make-curve
+          %1 (:height %2) (:direction %2) (:half-cycles %2) (:width %2))
+       (reductions curve-end start curve-defs)
+       curve-defs))
 
 (defn path-val
   "Calculate the y-value or m-value of the path at a particular x-value."
-  [path x y-or-m]
+  [y-or-m path x]
   (if-let [curve (last (take-while #(<= (:p %) x) path))]
     ((y-or-m {:y curve-y :m curve-m}) curve x)))
 
-(def path-y (memoize path-val))
-
 ;;;;; Draw
+
+(defn double-ends
+  "Duplicates the first and last elements in a list so that they occur twice."
+  [xs]
+  (cons (first xs) (concat xs [(last xs)])))
 
 (defn draw-path
   "Draws a section of a path given by [start,end] with resolution vertices."
   [path [start end] resolution]
   (q/begin-shape)
   (q/vertex start 0)
-  (doseq [x (concat (cons start (range start (+ end resolution) resolution))
-                    [end])]
-    (if-let [y (path-y path x :y)]
+  (doseq [x (double-ends (range start (+ end resolution) resolution))]
+    (if-let [y (path-val :y path x)]
       (q/vertex x y)))
   (q/vertex end 0)
   (q/end-shape :close))
