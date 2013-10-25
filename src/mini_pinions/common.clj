@@ -16,7 +16,7 @@
 
 (defmacro dbg [x] `(let [x# ~x] (println "dbg:" '~x "=" x#) x#))
 
-;;;;; Convenience functions
+;;;;; Draw
 
 (defn draw-line [[x1 y1] [x2 y2]]
   (q/line x1 y1 x2 y2))
@@ -32,21 +32,14 @@
 
 ;;;;; Worlds
 
-;;; Mini Pinions UI is divided into Worlds. Each World is a separate UI view and
-;;; manages its own state. Only one World is active at a time.
+;;; Mini Pinion's UI is divided into worlds. Each world is a separate UI view
+;;; and manages its own state. Only one world is active at a time.
 
-(declare make-world)
-(defn init-state
-  "Initializes the Quil sketch's state with the initial World. This should only
-  be called once, preferably in the setup function."
-  [world-name]
-  (q/set-state! :world (atom (make-world world-name))))
-
-;;; Each World can implement the following four multimethods (the only required
-;;; one is draw). Init is called once and returns an initialized World map.
-;;; Update is called every frame and returns an updated World based on the
-;;; original World passed to it. Input is called whenver the mouse is pressed or
-;;; a key is pressed and returns an altered World as necessary. It should be
+;;; Each world can implement the following four multimethods (the only required
+;;; one is draw). Init is called once and returns an initialized world map.
+;;; Update is called every frame and returns an updated world based on the
+;;; original world passed to it. Input is called whenver the mouse is pressed or
+;;; a key is pressed and returns an altered world as necessary. It should be
 ;;; used to respond to momentary input (which could occur between updates). Draw
 ;;; is called every frame and renders the world on screen (returns nothing).
 
@@ -60,10 +53,25 @@
 (defmethod input :default [world] world)
 (defmethod draw :default [world] nil)
 
+;;; To create a new world (for example, to return a completely different world
+;;; from the input method when a button is pressed), make-world can be used to
+;;; create it. To set initial values other than the world's name, use the init
+;;; method directly.
+
 (defn make-world
   "Creates and initializes a new World given its name."
   [world-name]
   (init {:name world-name}))
+
+;;;;; Setup
+
+(defn init-state
+  "Initializes the Quil sketch's state with the initial World. This should only
+  be called once, preferably in the setup function."
+  [world-name]
+  (q/set-state! :world (atom (make-world world-name))))
+
+;;;;; Events
 
 (defn input-world
   "Update the current World based on an input event."
