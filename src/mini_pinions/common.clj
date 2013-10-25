@@ -78,7 +78,7 @@
   []
   (swap! (q/state :world) input))
 
-(defn draw-world
+(defn update-and-draw-world
   "Updates the current World and draws."
   []
   (draw (swap! (q/state :world) update)))

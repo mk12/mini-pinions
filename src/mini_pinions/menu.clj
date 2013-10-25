@@ -1,7 +1,7 @@
 ;;; Copyright 2013 Mitchell Kember. Subject to the MIT License.
 
 (ns mini-pinions.menu
-  "Implements the main menu World, the starting point of the application."
+  "Implements the main menu world, the starting point of the application."
   (:require [quil.core :as q]
             [mini-pinions.button :as b]
             [mini-pinions.common :as c]

@@ -1,7 +1,7 @@
 ;;; Copyright 2013 Mitchell Kember. Subject to the MIT License.
 
 (ns mini-pinions.game
-  "Implements the game World, where all the fun happens."
+  "Implements the game world, where all the fun happens."
   (:require [quil.core :as q]
             [mini-pinions.common :as c]
             [mini-pinions.curve :as u]
@@ -13,10 +13,10 @@
 (def fledge-radius 5)
 (def g-fly 0.2)
 (def g-fall 0.9)
-(def elasticity 0.6)
+(def elasticity 0.5)
 (def path-friction 0.987)
 (def min-x-speed 1.2)
-(def rebound-threshold 0.5)
+(def rebound-threshold 0.6)
 
 (def curve-resolution 8)
 
@@ -116,10 +116,10 @@
   (let [accel (v/make 0 (- (if (q/mouse-state) g-fall g-fly)))
         new-vel (v/add (:vel world) accel)
         new-pos (v/add (:pos world) new-vel)
-        path-y (u/path-val (:path (:level-data world)) (v/x new-pos) :y)
+        path-y (u/path-val :y (:path (:level-data world)) (v/x new-pos))
         min-y (+ path-y fledge-radius)]
     (if (< (v/y new-pos) min-y)
-      (let [tangent-m (u/path-val (:path (:level-data world)) (v/x new-pos) :m)
+      (let [tangent-m (u/path-val :m (:path (:level-data world)) (v/x new-pos))
             tangent (v/normalize (v/make 1 tangent-m))
             tdot (v/dot (v/normalize new-vel) tangent)
             normal-m (- (/ tangent-m))
