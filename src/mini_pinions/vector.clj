@@ -34,14 +34,14 @@
 (defn dot [[x1 y1] [x2 y2]]
   (+ (* x1 x2) (* y1 y2)))
 
-(defn normSq [v]
+(defn norm-sq [v]
   (dot v v))
 
 (defn norm [v]
-  (Math/sqrt (normSq v)))
+  (Math/sqrt (norm-sq v)))
 
 (defn normalize [v]
-  (scale (/ (norm v)) v))
+  (div (norm v) v))
 
 (defn negate [v]
   (scale -1 v))

@@ -49,7 +49,7 @@
 ;;;     :height, :direction, :half-cycles, :width.
 ;;; A "curve" refers to the keys
 ;;;     :q, :a, :k, :p, :w.
-;;; A "path" refers to a sequence of curves.
+;;; A "path" refers to a collection of curves.
 
 (defn curve-end
   "Calculates the end-point of a curve definition given its start-point."
@@ -61,8 +61,8 @@
     (v/add start delta)))
 
 (defn make-path
-  "Makes a sequence of curves by joining the curve definitions end to end. The
-  position of the first curve must be provided."
+  "Makes a path by joining the curve definitions end to end. The position of the
+  first curve must be provided."
   [start curve-defs]
   (map #(make-curve
           %1 (:height %2) (:direction %2) (:half-cycles %2) (:width %2))
@@ -78,16 +78,17 @@
 ;;;;; Draw
 
 (defn double-ends
-  "Duplicates the first and last elements in a list so that they occur twice."
-  [xs]
-  (cons (first xs) (concat xs [(last xs)])))
+  "Duplicates the first and last elements in coll so that they occur twice."
+  [coll]
+  (conj (concat coll [(last coll)])
+        (first coll)))
 
 (defn draw-path
-  "Draws a section of a path given by [start,end] with resolution vertices."
-  [path [start end] resolution]
+  "Draws a section of a path given by [start,end] with res vertices."
+  [path [start end] res]
   (q/begin-shape)
   (q/vertex start 0)
-  (doseq [x (double-ends (range start (+ end resolution) resolution))]
+  (doseq [x (double-ends (range start (+ end res) res))]
     (if-let [y (path-val :y path x)]
       (q/vertex x y)))
   (q/vertex end 0)
