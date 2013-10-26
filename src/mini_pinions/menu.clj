@@ -17,7 +17,7 @@
 (def buttons
   (b/make-button-stack
     (v/make c/half-width c/half-height)
-    (v/make 300 300)
+    (v/make 400 300)
     button-margin
     [{:text "Play"
       :action {:name :game, :level 1}
@@ -41,5 +41,4 @@
 
 (defmethod c/draw :menu [world]
   (q/background background-color)
-  (q/text (str (q/current-frame-rate)) 20 20)
-  (b/draw-button-seq buttons))
+  (b/draw-buttons buttons))

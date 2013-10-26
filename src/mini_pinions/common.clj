@@ -73,6 +73,9 @@
 
 ;;;;; Events
 
+;;; These functions are meant to be passed as event hooks to Quil. These two
+;;; functions are the only ones that swap the world state atom.
+
 (defn input-world
   "Update the current World based on an input event."
   []

@@ -33,7 +33,7 @@
 (defn make-button-stack
   "Makes a stack of buttons on top of each other given an enclosing rectangle
   (defined by center and size), an amount of padding between buttons, and a
-  sequence of maps with the keys :text, :action, and :color."
+  collection of maps with the keys :text, :action, and :color."
   [center size padding button-defs]
   (let [n-buttons (count button-defs)
         total-padding (* (- n-buttons 1) padding)
@@ -73,18 +73,15 @@
 (defn draw-button
   "Draws the button with a rectange and text."
   [button]
-  (q/push-style)
   (apply q/fill (if (mouse-in-button? button)
                   (:hover-color button)
                   (:color button)))
   (c/draw-rect (:top-left button) (:bottom-right button))
   (q/fill (:text-color button))
-  (q/text-align :center :center)
   (q/text-size (:text-size button))
-  (c/draw-text (:text button) (:center button))
-  (q/pop-style))
+  (c/draw-text (:text button) (:center button)))
 
-(defn draw-button-seq
-  "Draws all of the buttons in a sequence using draw-button."
+(defn draw-buttons
+  "Draws all of the buttons in a collection using draw-button."
   [buttons]
   (doseq [btn buttons] (draw-button btn)))
