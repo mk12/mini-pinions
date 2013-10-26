@@ -114,7 +114,7 @@
       min-x-speed
       (if (< (v/y pos) min-y)
         [(v/make (v/x pos) min-y)
-        (collide-fledge vel path-y (u/path-val :m path (v/x pos)))]
+         (collide-fledge vel path-y (u/path-val :m path (v/x pos)))]
         [pos vel]))))
 
 ;;;;; Draw
