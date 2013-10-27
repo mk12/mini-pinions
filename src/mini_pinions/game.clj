@@ -66,8 +66,11 @@
 
 ;;;;; Buttons
 
+(defn menu-action [world]
+  (c/init {:name :menu, :game (assoc world :paused true)}))
+
 (def buttons
-  [m/menu-button
+  [(assoc m/menu-button :action menu-action)
    (b/make-control
      "II"
      #(assoc % :paused (not (:paused %)))

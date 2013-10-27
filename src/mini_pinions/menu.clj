@@ -17,13 +17,18 @@
 (def menu-button
   (b/make-control "⇐" (b/make-world :menu) b/top-left-1 [255 255 255]))
 
+(defn play-action [world]
+  (if-let [game (:game world)]
+    game
+    (c/init {:name :game, :level 1})))
+
 (def buttons
   (b/make-button-stack
     (v/make c/half-width c/half-height)
     (v/make 400 300)
     button-margin
     [{:text "Play"
-      :action (b/init-world {:name :game, :level 1})
+      :action play-action
       :color [255 150 0]}
      {:text "Instructions"
       :action (b/make-world :instructions)
