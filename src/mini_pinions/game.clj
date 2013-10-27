@@ -5,6 +5,7 @@
   (:require [quil.core :as q]
             [mini-pinions.button :as b]
             [mini-pinions.common :as c]
+            [mini-pinions.menu :as m]
             [mini-pinions.curve :as u]
             [mini-pinions.vector :as v])
   (:import java.lang.Math))
@@ -95,7 +96,7 @@
       (v/scale elasticity (reflect vel0 (v/make (- m) 1))))))
 
 (defn keep-going
-  "Ensures that the x-component of a velocity is above a certain value."
+  "Ensures that the x-component of the velocity is above a certain value."
   [x [pos vel]]
   [pos (if (< (v/x vel) x)
          (v/make x (v/y vel))
@@ -104,7 +105,7 @@
 (defn update-fledge
   "Calculates a new position and velocity for Fledge given the old ones as well
   as the magnitude of the acceleration due to gravity and the path."
-  [pos0 vel0 gravity path]
+  [[pos0 vel0] gravity path]
   (let [accel (v/make 0 (- gravity))
         vel (v/add vel0 accel)
         pos (v/add pos0 vel)
@@ -157,11 +158,6 @@
   (q/text-size message-size)
   (c/draw-text message message-pos))
 
-;;;;; Buttons
-
-(def menu-button
-  (b/make-button "<" :menu (v/make 20 20) (v/make 30 30) [255 255 255]))
-
 ;;;;; World
 
 (defmethod c/init :game [world]
@@ -169,35 +165,33 @@
     (assoc world
            :level-data level-data
            :frozen true
-           :pos (:start level-data)
-           :vel v/zero)))
+           :fledge [(:start level-data) v/zero])))
 
 (defmethod c/update :game [world]
   (if (:frozen world)
     world
     (let [gravity (if (q/mouse-state) gravity-fall gravity-fly)
           path (:path (:level-data world))
-          [pos vel] (update-fledge (:pos world) (:vel world) gravity path)]
-      (assoc world :pos pos :vel vel))))
+          fledge (update-fledge (:fledge world) gravity path)]
+      (assoc world :fledge fledge))))
 
 (defmethod c/input :game [world]
-  (if (q/mouse-state)
-    (cond
-      (b/mouse-in-button? menu-button) (c/make-world (:action menu-button))
-      (:frozen world) (assoc world :frozen false)
-      :else world)
-    world))
+  (if-let [btn (b/selected-button [m/menu-button])]
+    ((:action btn))
+    (if (and (:frozen world) (q/mouse-state))
+      (assoc world :frozen false)
+      world)))
 
 (defmethod c/draw :game [world]
-  (let [pos (:pos world)
+  (let [[pos _] (:fledge world)
         scale (path-scale pos)
         res (/ curve-resolution scale)
         bounds (path-bounds pos scale res)]
     (apply q/background background-color)
     (if (:frozen world) (draw-message frozen-message))
-    (b/draw-button menu-button)
+    (b/draw-button m/menu-button)
     (transform pos scale)
     (apply q/fill path-color)
     (u/draw-path (:path (:level-data world)) bounds res)
     (apply q/fill fledge-color)
-    (c/draw-ellipse pos fledge-radius)))
+    (c/draw-circle pos fledge-radius)))

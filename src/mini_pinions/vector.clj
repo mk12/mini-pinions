@@ -16,8 +16,8 @@
 
 (def zero (make 0 0))
 
-(defn x [v] (get v 0))
-(defn y [v] (get v 1))
+(defn x [v] (v 0))
+(defn y [v] (v 1))
 
 (defn add [[x1 y1] [x2 y2]]
   [(+ x1 x2) (+ y1 y2)])

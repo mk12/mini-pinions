@@ -110,3 +110,6 @@ I went through most of the code and improved little things to make it more reada
 I removed the frame rate from the main menu (I was showing it in the top-left corner before), and for some reason that made all the text start to look good. Before the text all looked horrible. I've encountered what seems to be an OpenGL bug with Quil that is occurring after I updated to OS X Mavericks: there is a gap of about twenty pixels from the top of the window to the top of where it rendered. You can see it in the screenshot above because the button should be five pixels from the top and the left edges. The Processing 3D renderer doesn't  do this, but it looks worse and is slower. I may end up using something other than Quil in the future if it isn't too much of a hassle – it would take little change since most of my functions are pure anyway, and I have built on top of abstractions.
 
 I am now ready to continue on with the second half of the steps that I laid out in my proposal. They should go much quicker than the first half did.
+
+**[26 Oct. 2013]**
+Today I worked on improving the overall quality of the code and implemented little thing like circular buttons. I also hooked up a lot more of the UI. My goal for tomorrow is to add the planetary gravity part of the game. Once that is in place, I will tag version 0.3.

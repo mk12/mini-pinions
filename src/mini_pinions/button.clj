@@ -30,6 +30,12 @@
      :hover-color (map #(* hover-mult %) color)
      :text-size (v/y half-size)
      :text-color (if dark 255 0)}))
+
+(defn make-buttons
+  "Makes a collection of buttons of the same shape and size."
+  [shape size button-defs]
+  (map #(make-button shape (:text %) (:action %) (:center %) size (:color %))
+       button-defs))
   
 (defn make-button-stack
   "Makes a stack of buttons on top of each other given an enclosing rectangle
