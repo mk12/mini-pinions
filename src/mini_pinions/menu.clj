@@ -9,7 +9,7 @@
 
 ;;;;; Constants
 
-(def background-color 120)
+(def background-color [150 200 200])
 (def button-margin 20)
 
 ;;;;; Buttons
@@ -40,5 +40,5 @@
     world))
 
 (defmethod c/draw :menu [world]
-  (q/background background-color)
+  (c/clear-background background-color)
   (b/draw-buttons buttons))

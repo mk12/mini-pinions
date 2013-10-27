@@ -15,12 +15,13 @@
 
 (defn make-button
   "Makes a new button and adds some calculated properties."
-  [text action center size color]
+  [shape text action center size color]
   (let [half-size (v/div 2 size)
         dark (< (reduce + color) (* 255 3 contrast-threshold))
         sign (if dark 1 -1)
         hover-mult (+ 1 (* sign button-hover-factor))]
-    {:text text
+    {:shape shape
+     :text text
      :action action
      :center center
      :top-left (v/sub center half-size)
@@ -43,7 +44,7 @@
         start (v/make (v/x center) start-y)
         center-n #(v/add start (v/make 0 (* (+ height padding) %)))
         centers (map center-n (range n-buttons))]
-    (map #(make-button (:text %1) (:action %1) %2 button-size (:color %1))
+    (map #(make-button :rect (:text %1) (:action %1) %2 button-size (:color %1))
          button-defs
          centers)))
 
@@ -71,13 +72,13 @@
 ;;;;; Draw
 
 (defn draw-button
-  "Draws the button with a rectange and text."
+  "Draws the button with a rectange or ellipse and text."
   [button]
-  (apply q/fill (if (mouse-in-button? button)
-                  (:hover-color button)
-                  (:color button)))
-  (c/draw-rect (:top-left button) (:bottom-right button))
-  (q/fill (:text-color button))
+  (c/fill-color
+    (if (mouse-in-button? button) (:hover-color button) (:color button)))
+  (((:shape button) {:rect c/draw-rect :circle c/draw-ellipse})
+    (:top-left button) (:bottom-right button))
+  (c/fill-grey (:text-color button))
   (q/text-size (:text-size button))
   (c/draw-text (:text button) (:center button)))
 

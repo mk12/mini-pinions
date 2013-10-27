@@ -9,7 +9,6 @@
 
 (defn setup []
   (q/smooth)
-  (q/ellipse-mode :radius)
   (q/rect-mode :corners)
   (q/text-align :center :center)
   (c/init-state :menu))

@@ -14,9 +14,22 @@
 
 ;;;;; Macros
 
-(defmacro dbg [x] `(let [x# ~x] (println "dbg:" '~x "=" x#) x#))
+(defmacro dbg [x]
+  `(let [x# ~x] (println "dbg:" '~x "=" x#) x#))
+
+(defmacro style [& body]
+  `(do (q/push-style) ~@body (q/pop-style)))
 
 ;;;;; Draw
+
+(defn fill-color [rgb]
+  (apply q/fill rgb))
+
+(defn fill-grey [x]
+  (q/fill x))
+
+(defn clear-background [rgb]
+  (apply q/background rgb))
 
 (defn draw-line [[x1 y1] [x2 y2]]
   (q/line x1 y1 x2 y2))
@@ -24,8 +37,13 @@
 (defn draw-rect [[x y] [w h]]
   (q/rect x y w h))
 
-(defn draw-ellipse [[x y] r]
+(defn draw-circle [[x y] r]
+  (q/ellipse-mode :radius)
   (q/ellipse x y r r))
+
+(defn draw-ellipse [[x1 y1] [x2 y2]]
+  (q/ellipse-mode :corners)
+  (q/ellipse x1 y1 x2 y2))
 
 (defn draw-text [s [x y]]
   (q/text s x y))
