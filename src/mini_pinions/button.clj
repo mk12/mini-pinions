@@ -11,6 +11,12 @@
 (def contrast-threshold 0.4)
 (def button-hover-factor 0.3)
 
+(def standard-size (v/make 30 30))
+(def top-left-1 (v/make 30 30))
+(def top-left-2 (v/make 70 30))
+(def top-right-1 (v/make (- c/width 30) 30))
+(def top-right-2 (v/make (- c/width 70) 30))
+
 ;;;;; Factories
 
 (defn make-button
@@ -31,11 +37,10 @@
      :text-size (v/y half-size)
      :text-color (if dark 255 0)}))
 
-(defn make-buttons
-  "Makes a collection of buttons of the same shape and size."
-  [shape size button-defs]
-  (map #(make-button shape (:text %) (:action %) (:center %) size (:color %))
-       button-defs))
+(defn make-control
+  "Makes a standard-sized circular button."
+  [text action center color]
+  (make-button :circle text action center standard-size color))
   
 (defn make-button-stack
   "Makes a stack of buttons on top of each other given an enclosing rectangle

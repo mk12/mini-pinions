@@ -27,7 +27,7 @@
 (def path-color [130 210 0])
 (def fledge-color [210 110 0])
 
-(def frozen-message "Click To Start")
+(def paused-message "Click To Play")
 (def message-size 40)
 (def message-color [0 0 50])
 (def message-pos [c/half-width (/ c/half-height 2)])
@@ -63,6 +63,21 @@
         :direction :up
         :half-cycles 600
         :width 150000}])}])
+
+;;;;; Buttons
+
+(def buttons
+  [m/menu-button
+   (b/make-control
+     "II"
+     #(assoc % :paused (not (:paused %)))
+     b/top-right-2
+     [100 100 100])
+   (b/make-control
+     "R"
+     #(c/init {:name :game :level (:level %)})
+     b/top-right-1
+     [200 200 200])])
 
 ;;;;; Physics
 
@@ -156,12 +171,12 @@
   (let [level-data (nth levels (- (:level world) 1))]
     (assoc world
            :level-data level-data
-           :frozen true
+           :paused true
            :space false
            :fledge [(:start level-data) v/zero])))
 
 (defmethod c/update :game [world]
-  (if (:frozen world)
+  (if (:paused world)
     world
     (let [gravity (if (q/mouse-state) gravity-fall gravity-fly)
           path (:path (:level-data world))
@@ -169,9 +184,9 @@
       (assoc world :fledge fledge))))
 
 (defmethod c/input :game [world]
-  (or (b/button-action [m/menu-button] world)
-      (if (and (:frozen world) (q/mouse-state))
-        (assoc world :frozen false)
+  (or (b/button-action buttons world)
+      (if (and (:paused world) (q/mouse-state))
+        (assoc world :paused false)
         world)))
 
 (defmethod c/draw :game [world]
@@ -180,8 +195,8 @@
         res (/ curve-resolution scale)
         bounds (path-bounds pos scale res)]
     (apply q/background background-color)
-    (if (:frozen world) (draw-message frozen-message))
-    (b/draw-button m/menu-button)
+    (if (:paused world) (draw-message paused-message))
+    (b/draw-buttons buttons)
     (transform pos scale)
     (apply q/fill path-color)
     (u/draw-path (:path (:level-data world)) bounds res)

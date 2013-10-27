@@ -15,13 +15,7 @@
 ;;;;; Buttons
 
 (def menu-button
-  (b/make-button
-    :circle
-    "⇐"
-    (b/make-world :menu)
-    (v/make 30 30)
-    (v/make 30 30)
-    [255 255 255]))
+  (b/make-control "⇐" (b/make-world :menu) b/top-left-1 [255 255 255]))
 
 (def buttons
   (b/make-button-stack
