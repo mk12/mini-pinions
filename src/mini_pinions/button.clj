@@ -54,6 +54,11 @@
          button-defs
          centers)))
 
+(defn make-button-grid
+  ""
+  []
+  nil)
+
 ;;;;; Mouse
 
 (defn mouse-in-button?
@@ -92,3 +97,18 @@
   "Draws all of the buttons in a collection using draw-button."
   [buttons]
   (doseq [btn buttons] (draw-button btn)))
+
+;;;;; Action
+
+(defmacro make-world [world-name]
+  `(fn [_#] (c/init {:name ~world-name})))
+
+(defmacro init-world [world]
+  `(fn [_#] (c/init ~world)))
+
+(defn button-action
+  "If a button is selected, returns the result of applying its action to the
+  given world, otherwise returns nil."
+  [buttons world]
+  (if-let [button (selected-button buttons)]
+    ((:action button) world)))

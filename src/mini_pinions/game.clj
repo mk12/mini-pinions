@@ -19,7 +19,7 @@
 (def elasticity 0.3)
 (def path-friction 0.987)
 
-(def fledge-radius 5)
+(def fledge-radius 9)
 (def curve-resolution 8)
 (def top-margin 10)
 
@@ -65,14 +65,6 @@
         :width 150000}])}])
 
 ;;;;; Physics
-
-; TODO: finish this
-(defn dist-derivative-y
-  "This isn't used yet."
-  [pos x]
-  (+ (Math/sin (* 2 x))
-     (* -2 (v/y pos) (Math/cos x))
-     (* -2 (v/x pos))))
 
 (defn reflect
   "Reflects vector v across normal vector n."
@@ -135,7 +127,7 @@
 (defn path-scale
   "Calculates the scale factor that should be used based on position."
   [center]
-  (let [top-y (+ (v/y center) top-margin)]
+  (let [top-y (+ (v/y center) fledge-radius top-margin)]
     (if (> top-y c/height)
       (/ c/height top-y)
       1)))
@@ -165,6 +157,7 @@
     (assoc world
            :level-data level-data
            :frozen true
+           :space false
            :fledge [(:start level-data) v/zero])))
 
 (defmethod c/update :game [world]
@@ -176,11 +169,10 @@
       (assoc world :fledge fledge))))
 
 (defmethod c/input :game [world]
-  (if-let [btn (b/selected-button [m/menu-button])]
-    ((:action btn))
-    (if (and (:frozen world) (q/mouse-state))
-      (assoc world :frozen false)
-      world)))
+  (or (b/button-action [m/menu-button] world)
+      (if (and (:frozen world) (q/mouse-state))
+        (assoc world :frozen false)
+        world)))
 
 (defmethod c/draw :game [world]
   (let [[pos _] (:fledge world)

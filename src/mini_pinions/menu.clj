@@ -9,18 +9,19 @@
 
 ;;;;; Constants
 
-(def background-color [150 200 200])
+(def background-color [160 240 255])
 (def button-margin 20)
 
 ;;;;; Buttons
 
 (def menu-button
-  (b/make-button :circle
-                 "←"
-                 #(c/make-world :menu)
-                 (v/make 30 30)
-                 (v/make 20 20)
-                 [180 210 200]))
+  (b/make-button
+    :circle
+    "⇐"
+    (b/make-world :menu)
+    (v/make 30 30)
+    (v/make 30 30)
+    [255 255 255]))
 
 (def buttons
   (b/make-button-stack
@@ -28,30 +29,30 @@
     (v/make 400 300)
     button-margin
     [{:text "Play"
-      :action #(c/init {:name :game, :level 1})
-      :color [50 50 50]}
+      :action (b/init-world {:name :game, :level 1})
+      :color [255 150 0]}
      {:text "Instructions"
-      :action #(c/init {:name :instructions})
-      :color [255 255 255]}
+      :action (b/make-world :instructions)
+      :color [0 221 255]}
      {:text "Levels"
-      :action #(c/init {:name :level-select})
-      :color [50 50 50]}
+      :action (b/make-world :level-select)
+      :color [255 255 255]}
      {:text "Level Editor"
-      :action #(c/init {:name :level-editor})
-      :color [255 255 255]}]))
+      :action (b/make-world :level-editor)
+      :color [100 100 100]}]))
 
 ;;;;; Draw
 
-(defn draw-title [s]
+(defn draw-title [title]
   (q/text-size 50)
-  (c/draw-text s (v/make c/half-width 50)))
+  (c/fill-grey 0)
+  (c/draw-text title (v/make c/half-width 75)))
 
 ;;;;; Menu world
 
 (defmethod c/input :menu [world]
-  (if-let [btn (b/selected-button buttons)]
-    ((:action btn))
-    world))
+  (or (b/button-action buttons world)
+      world))
 
 (defmethod c/draw :menu [world]
   (c/clear-background background-color)
@@ -62,9 +63,8 @@
 ;;;;; Instructions world
 
 (defmethod c/input :instructions [world]
-  (if-let [btn (b/selected-button [menu-button])]
-    ((:action btn))
-    world))
+  (or (b/button-action [menu-button] world)
+      world))
 
 (defmethod c/draw :instructions [world]
   (c/clear-background background-color)
@@ -76,10 +76,9 @@
 
 ;;;;; Level select world
 
-(defmethod c/input :level-select [world]
-  (if-let [btn (b/selected-button [menu-button])]
-    ((:action btn))
-    world))
+(defmethod c/input :instructions [world]
+  (or (b/button-action [menu-button] world)
+      world))
 
 (defmethod c/draw :level-select [world]
   (c/clear-background background-color)

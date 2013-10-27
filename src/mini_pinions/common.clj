@@ -71,23 +71,13 @@
 (defmethod input :default [world] world)
 (defmethod draw :default [world] nil)
 
-;;; To create a new world (for example, to return a completely different world
-;;; from the input method when a button is pressed), make-world can be used to
-;;; create it. To set initial values other than the world's name, use the init
-;;; method directly.
-
-(defn make-world
-  "Creates and initializes a new World given its name."
-  [world-name]
-  (init {:name world-name}))
-
 ;;;;; Setup
 
 (defn init-state
   "Initializes the Quil sketch's state with the initial World. This should only
   be called once, preferably in the setup function."
   [world-name]
-  (q/set-state! :world (atom (make-world world-name))))
+  (q/set-state! :world (atom (init {:name world-name}))))
 
 ;;;;; Events
 

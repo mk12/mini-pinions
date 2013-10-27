@@ -77,18 +77,12 @@
 
 ;;;;; Draw
 
-(defn double-ends
-  "Duplicates the first and last elements in coll so that they occur twice."
-  [coll]
-  (conj (concat coll [(last coll)])
-        (first coll)))
-
 (defn draw-path
   "Draws a section of a path given by [start,end] with res vertices."
   [path [start end] res]
   (q/begin-shape)
   (q/vertex start 0)
-  (doseq [x (double-ends (range start (+ end res) res))]
+  (doseq [x (range start (+ end res) res)]
     (if-let [y (path-val :y path x)]
       (q/vertex x y)))
   (q/vertex end 0)
