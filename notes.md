@@ -91,7 +91,7 @@ I will deal with this later! For now, I want my halfway checkpoint to be somewha
 
 It is 1:28 a.m. and I just experienced a moment in which I wanted to smash my head against the wall. No wonder everything seemed so strange! I was simply evaluating the cosine of Fledge's position, when obviously I need to evaluate it based on the actual path and its transformations. I noticed this when I tried drawing a line which represented the normal. I can't believe I didn't realize this sooner.
 
-Finally! It actually feels like _Tiny Wi_---I mean, like I intended it to feel. I still need to fine-tune some constants, but it is already fun and challenging. Some of the code is a bit of a mess, so I will need to go over it carefully and refactor some things.
+Finally! It actually feels like _Tiny Wi_—I mean, like I intended it to feel. I still need to fine-tune some constants, but it is already fun and challenging. Some of the code is a bit of a mess, so I will need to go over it carefully and refactor some things.
 
 [12]: https://github.com/mk12/luminosity
 
