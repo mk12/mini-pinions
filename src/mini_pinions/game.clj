@@ -19,11 +19,15 @@
 (def elasticity 0.3)
 (def path-friction 0.987)
 
+(def transition-height (* 1.9 c/height))
+(def space-height (* 2.3 c/height))
+
 (def fledge-radius 9)
 (def curve-resolution 8)
 (def top-margin 10)
 
-(def background-color [160 240 255])
+(def sky-color [160 240 255])
+(def space-color (map #(* 0.5 %) sky-color))
 (def path-color [130 210 0])
 (def fledge-color [210 110 0])
 
@@ -35,7 +39,7 @@
 ;;;;; Levels
 
 (def levels
-  [{:start (v/make 400 (+ 300 fledge-radius))
+  [{:start (v/make 5000 (+ 300 fledge-radius))
     :path
     (u/make-path
       v/zero
@@ -107,10 +111,10 @@
 
 (defn keep-going
   "Ensures that the x-component of the velocity is above a certain value."
-  [x [pos vel]]
-  [pos (if (< (v/x vel) x)
-         (v/make x (v/y vel))
-         vel)])
+  [x [pos0 vel0]]
+  [pos0 (if (< (v/x vel0) x)
+          (v/make x (v/y vel0))
+          vel0)])
 
 (defn update-fledge
   "Calculates a new position and velocity for Fledge given the old ones as well
@@ -123,14 +127,38 @@
         min-y (+ path-y fledge-radius)]
     (keep-going
       min-x-speed
-      (if (< (v/y pos) min-y)
+      (if (>= (v/y pos) min-y)
+        [pos vel]
         [(v/make (v/x pos) min-y)
-         (collide-fledge vel path-y (u/path-val :m path (v/x pos)))]
-        [pos vel]))))
+         (collide-fledge vel path-y (u/path-val :m path (v/x pos)))]))))
+
+(defn transition-pos
+  "Calculate the position in the transition to outer space, clamped to [0,1]."
+  [pos]
+  (c/clamp (c/range->normal (v/y pos) transition-height space-height)))
 
 ;;;;; Draw
 
-(defn path-bounds
+(defn draw-message
+  "Draws a text message prominently."
+  [message]
+  (c/fill-color message-color)
+  (q/text-size message-size)
+  (c/draw-text message message-pos))
+
+(defn lerp-color
+  "Linearly interpolates between two colours."
+  [t c1 c2]
+  (map (partial c/normal->range t) c1 c2))
+
+(defn calc-color
+  "Calculates the background color to use based on position."
+  [pos]
+  (lerp-color (transition-pos pos) sky-color space-color))
+
+;;;;; Transform
+
+(defn calc-path-bounds
   "Calculates the interval over which to draw, given the position of the center
   of the screen, the scaling factor, and the resolution of the curve. The left
   and right bounds of the interval lie on multiples of the resolution so that
@@ -142,31 +170,38 @@
     [(* (Math/floor (/ left res)) res)
      (* (Math/ceil (/ right res)) res)]))
 
-(defn path-scale
-  "Calculates the scale factor that should be used based on position."
-  [center]
-  (let [top-y (+ (v/y center) fledge-radius top-margin)]
-    (if (> top-y c/height)
-      (/ c/height top-y)
-      1)))
+(defn calc-scale
+  "Calculates the scale factor to draw with based on position."
+  [pos]
+  (let [y (+ (v/y pos) fledge-radius top-margin)
+        th transition-height]
+    (c/clamp
+      (if (< y th)
+        (/ c/height y)
+        (c/range->range (v/y pos) th space-height (/ c/height th) 1)))))
+
+(defn calc-translate
+  "Calculates the translation to draw with based on position and scale."
+  [pos scale]
+  (-> (- 1 (transition-pos pos))
+      c/square
+      (* (- c/half-height fledge-radius top-margin))
+      (+ c/half-height)
+      (/ scale)
+      (- (v/y pos))
+      (min 0)))
 
 (defn transform
-  "Applies all necessary transformations to center the view around the given
-  point with the given scale. Also transforms the origin to the top-left so that
-  Quil draw calls will work properly."
-  [center scale]
-  (q/translate 0 c/height)
-  (q/scale 1 -1)
-  (q/translate c/half-width 0)
-  (q/scale scale scale)
-  (q/translate (- (v/x center)) 0))
-
-(defn draw-message
-  "Draws a text message prominently."
-  [message]
-  (apply q/fill message-color)
-  (q/text-size message-size)
-  (c/draw-text message message-pos))
+  "Applies all necessary transformations for the given position. Also transforms
+  the origin to the bottom-left instead of the top-left."
+  [pos]
+  (let [scale (calc-scale pos)]
+    (q/translate 0 c/height)
+    (q/scale 1 -1)
+    (q/translate c/half-width 0)
+    (q/scale scale scale)
+    (q/translate (- (v/x pos))
+                 (calc-translate pos scale))))
 
 ;;;;; World
 
@@ -175,7 +210,6 @@
     (assoc world
            :level-data level-data
            :paused true
-           :space false
            :fledge [(:start level-data) v/zero])))
 
 (defmethod c/update :game [world]
@@ -189,19 +223,19 @@
 (defmethod c/input :game [world]
   (or (b/button-action buttons world)
       (if (and (:paused world) (q/mouse-state))
-        (assoc world :paused false)
-        world)))
+        (assoc world :paused false))
+      world))
 
 (defmethod c/draw :game [world]
   (let [[pos _] (:fledge world)
-        scale (path-scale pos)
+        scale (calc-scale pos)
         res (/ curve-resolution scale)
-        bounds (path-bounds pos scale res)]
-    (apply q/background background-color)
+        bounds (calc-path-bounds pos scale res)]
+    (c/clear-background (calc-color pos))
     (if (:paused world) (draw-message paused-message))
     (b/draw-buttons buttons)
-    (transform pos scale)
-    (apply q/fill path-color)
+    (transform pos)
+    (c/fill-color path-color)
     (u/draw-path (:path (:level-data world)) bounds res)
-    (apply q/fill fledge-color)
+    (c/fill-color fledge-color)
     (c/draw-circle pos fledge-radius)))

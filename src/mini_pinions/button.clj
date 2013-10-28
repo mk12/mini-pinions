@@ -60,7 +60,7 @@
          centers)))
 
 (defn make-button-grid
-  ""
+  "Not yet implemented."
   []
   nil)
 

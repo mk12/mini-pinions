@@ -12,10 +12,18 @@
 (def background-color [160 240 255])
 (def button-margin 20)
 
-;;;;; Buttons
+;;;;; Menu button
+
+(defn menu-action [world]
+  (c/init {:name :menu, :game (:game world)}))
 
 (def menu-button
-  (b/make-control "⇐" (b/make-world :menu) b/top-left-1 [255 255 255]))
+  (b/make-control "<" menu-action b/top-left-1 [255 255 255]))
+
+;;;;; Buttons
+
+(defmacro returning-action [world-name]
+  `(fn [world#] {:name ~world-name :game (:game world#)}))
 
 (defn play-action [world]
   (if-let [game (:game world)]
@@ -31,13 +39,13 @@
       :action play-action
       :color [255 150 0]}
      {:text "Instructions"
-      :action (b/make-world :instructions)
+      :action (returning-action :instructions)
       :color [0 221 255]}
      {:text "Levels"
-      :action (b/make-world :level-select)
+      :action (returning-action :level-select)
       :color [255 255 255]}
      {:text "Level Editor"
-      :action (b/make-world :level-editor)
+      :action (returning-action :level-editor)
       :color [100 100 100]}]))
 
 ;;;;; Draw
@@ -55,7 +63,6 @@
 
 (defmethod c/draw :menu [world]
   (c/clear-background background-color)
-  (q/text-size 50)
   (draw-title "Mini Pinions")
   (b/draw-buttons buttons))
 
@@ -67,19 +74,19 @@
 
 (defmethod c/draw :instructions [world]
   (c/clear-background background-color)
-  (b/draw-button menu-button)
   (draw-title "Instructions")
+  (b/draw-button menu-button)
   (q/text-size 16)
   (c/draw-text "Later on, there will be instructions here."
                (v/make c/half-width 300)))
 
 ;;;;; Level select world
 
-(defmethod c/input :instructions [world]
+(defmethod c/input :level-select [world]
   (or (b/button-action [menu-button] world)
       world))
 
 (defmethod c/draw :level-select [world]
   (c/clear-background background-color)
-  (b/draw-button menu-button)
-  (draw-title "Level Select"))
+  (draw-title "Level Select")
+  (b/draw-button menu-button))

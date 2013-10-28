@@ -1,8 +1,7 @@
 ;;; Copyright 2013 Mitchell Kember. Subject to the MIT License.
 
 (ns mini-pinions.common
-  "Defines some common state and UI functions. This file has to be separate from
-  mini-pinions.core to avoid cyclical dependency issues."
+  "Defines some common functionality used app-wide."
   (:require [quil.core :as q]))
 
 ;;;;; Constants
@@ -47,6 +46,36 @@
 
 (defn draw-text [s [x y]]
   (q/text s x y))
+
+;;;;; Math
+
+(defn square
+  "Multiplies x with itself; raises it to the second power."
+  [x]
+  (* x x))
+
+(defn clamp
+  "Clamps a number to a the range [start,end]. Defaults to [0,1]."
+  ([x] (clamp 0 1 x))
+  ([start end x] (max start (min end x))))
+
+(defn range->range
+  "Maps x from the range [a,b] to the range [n,m]."
+  [x a b n m]
+  (-> (- x a)
+      (/ (- b a))
+      (* (- m n))
+      (+ n)))
+
+(defn range->normal
+  "Maps x from the range [a,b] to the range [0,1]."
+  [x a b]
+  (range->range x a b 0 1))
+
+(defn normal->range
+  "Maps x from the range [0,1] to the range [n,m]."
+  [x n m]
+  (range->range x 0 1 n m))
 
 ;;;;; Worlds
 
