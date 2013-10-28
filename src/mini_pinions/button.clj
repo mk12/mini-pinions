@@ -60,8 +60,12 @@
          centers)))
 
 (defn make-button-grid
-  "Not yet implemented."
-  []
+  "Makes a grid of buttons given their shape (:rect or :circle), an enclosing
+  rectangle (defined by center and size), an amount of padding between buttons,
+  the number of columns, and a collection of maps with keys :text, :action, and
+  :color."
+  [shape center size padding n-cols butten-defs]
+  ;; Use partition
   nil)
 
 ;;;;; Mouse

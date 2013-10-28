@@ -120,3 +120,6 @@ Today I worked on improving the overall quality of the code and implemented litt
 The OpenGL problem I mentioned earlier has suddenly gone away, which is good because it was getting annoying. I did some more work on cleaning up the code today. In particular, I really rethought the way the buttons should work, and I've improved the way their actions are dispatched. I've added buttons for pausing and restarting the game, and now when you return to the menu and then go back to the game, your previous game is still there, ready to be resumed.
 
 I spent a lot of time working on implementing the planetary gravity part of the game. I got the scree to smoothly transition between the two modes. When you go really high, the background becomes darker and the camera zooms back in and centres on Fledge. I am very pleased with the result. Now I just need to add the planets.
+
+**[28 Oct. 2013]**
+Today I added a new file for planets.

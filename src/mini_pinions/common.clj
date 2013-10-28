@@ -16,8 +16,11 @@
 (defmacro dbg [x]
   `(let [x# ~x] (println "dbg:" '~x "=" x#) x#))
 
-(defmacro style [& body]
+(defmacro restore-style [& body]
   `(do (q/push-style) ~@body (q/pop-style)))
+
+(defmacro restore-matrix [& body]
+  `(do (q/push-matrix) ~@body (q/pop-matrix)))
 
 ;;;;; Draw
 

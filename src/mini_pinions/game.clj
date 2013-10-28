@@ -20,14 +20,14 @@
 (def path-friction 0.987)
 
 (def transition-height (* 1.9 c/height))
-(def space-height (* 2.3 c/height))
+(def space-height (* 2.5 c/height))
 
 (def fledge-radius 9)
-(def curve-resolution 8)
+(def curve-resolution 25)
 (def top-margin 10)
 
 (def sky-color [160 240 255])
-(def space-color (map #(* 0.5 %) sky-color))
+(def space-color (map #(* 0.25 %) sky-color))
 (def path-color [130 210 0])
 (def fledge-color [210 110 0])
 
@@ -236,7 +236,7 @@
     (b/draw-buttons buttons)
     (transform pos)
     (c/fill-color path-color)
-    (if (> (transition-pos pos) 0)
+    (if (< (transition-pos pos) 0.5)
       (u/draw-path (:path (:level-data world)) bounds res))
     (c/fill-color fledge-color)
     (c/draw-circle pos fledge-radius)))
