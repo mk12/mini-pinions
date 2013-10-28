@@ -113,3 +113,10 @@ I am now ready to continue on with the second half of the steps that I laid out 
 
 **[26 Oct. 2013]**
 Today I worked on improving the overall quality of the code and implemented little thing like circular buttons. I also hooked up a lot more of the UI. My goal for tomorrow is to add the planetary gravity part of the game. Once that is in place, I will tag version 0.3.
+
+## Astropinions
+
+**[27 Oct. 2013]**
+The OpenGL problem I mentioned earlier has suddenly gone away, which is good because it was getting annoying. I did some more work on cleaning up the code today. In particular, I really rethought the way the buttons should work, and I've improved the way their actions are dispatched. I've added buttons for pausing and restarting the game, and now when you return to the menu and then go back to the game, your previous game is still there, ready to be resumed.
+
+I spent a lot of time working on implementing the planetary gravity part of the game. I got the scree to smoothly transition between the two modes. When you go really high, the background becomes darker and the camera zooms back in and centres on Fledge. I am very pleased with the result. Now I just need to add the planets.

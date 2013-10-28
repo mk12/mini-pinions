@@ -236,6 +236,7 @@
     (b/draw-buttons buttons)
     (transform pos)
     (c/fill-color path-color)
-    (u/draw-path (:path (:level-data world)) bounds res)
+    (if (> (transition-pos pos) 0)
+      (u/draw-path (:path (:level-data world)) bounds res))
     (c/fill-color fledge-color)
     (c/draw-circle pos fledge-radius)))
