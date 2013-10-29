@@ -5,7 +5,9 @@
   (:require [quil.core :as q]
             [mini-pinions.button :as b]
             [mini-pinions.common :as c]
+            [mini-pinions.level :as l]
             [mini-pinions.menu :as m]
+            [mini-pinions.planet :as p]
             [mini-pinions.curve :as u]
             [mini-pinions.vector :as v])
   (:import java.lang.Math))
@@ -35,38 +37,6 @@
 (def message-size 40)
 (def message-color [0 0 50])
 (def message-pos [c/half-width (/ c/half-height 2)])
-
-;;;;; Levels
-
-(def levels
-  [{:start (v/make 5000 (+ 300 fledge-radius))
-    :path
-    (u/make-path
-      v/zero
-      [{:height 300
-        :direction :up
-        :half-cycles 1
-        :width 400}
-       {:height 250
-        :direction :down
-        :half-cycles 1
-        :width 300}
-       {:height 175
-        :direction :up
-        :half-cycles 3
-        :width 400}
-       {:height 25
-        :direction :down
-        :half-cycles 20
-        :width 600}
-       {:height 100
-        :direction :down
-        :half-cycles 1
-        :width 70}
-       {:height 200
-        :direction :up
-        :half-cycles 600
-        :width 150000}])}])
 
 ;;;;; Buttons
 
@@ -206,7 +176,7 @@
 ;;;;; World
 
 (defmethod c/init :game [world]
-  (let [level-data (nth levels (- (:level world) 1))]
+  (let [level-data (l/level-n (:level world))]
     (assoc world
            :level-data level-data
            :paused true

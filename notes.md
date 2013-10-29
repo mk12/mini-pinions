@@ -122,4 +122,7 @@ The OpenGL problem I mentioned earlier has suddenly gone away, which is good bec
 I spent a lot of time working on implementing the planetary gravity part of the game. I got the scree to smoothly transition between the two modes. When you go really high, the background becomes darker and the camera zooms back in and centres on Fledge. I am very pleased with the result. Now I just need to add the planets.
 
 **[28 Oct. 2013]**
-Today I added a new file for planets.
+Today I added a new file for planets. I tried to implement all the functions I knew I would need as fast as possible. I am already seeing some patterns in my code, mostly in the way I am using lists.
+
+**[29 Oct. 2013]**
+Something.

@@ -9,6 +9,7 @@
 
 (defn setup []
   (q/smooth)
+  (q/stroke 0)
   (q/rect-mode :corners)
   (q/text-align :center :center)
   (c/init-state :menu))
