@@ -21,11 +21,13 @@
 (def elasticity 0.3)
 (def path-friction 0.987)
 
+(def space-gravity-coef 0.5)
 (def transition-height (* 1.9 c/height))
 (def space-height (* 2.5 c/height))
+(def max-height (* 4 c/height))
 
 (def fledge-radius 9)
-(def curve-resolution 25)
+(def curve-resolution 8)
 (def top-margin 10)
 
 (def sky-color [160 240 255])
@@ -68,7 +70,7 @@
       (v/negate)
       (v/add v)))
 
-(defn collide-fledge
+(defn collide-path-fledge
   "Calculate a new velocity for Fledge after colliding with the path at a point
   where it has height y and slope m."
   [vel0 y m]
@@ -86,7 +88,7 @@
           (v/make x (v/y vel0))
           vel0)])
 
-(defn update-fledge
+(defn update-fledge-path
   "Calculates a new position and velocity for Fledge given the old ones as well
   as the magnitude of the acceleration due to gravity and the path."
   [[pos0 vel0] gravity path]
@@ -100,12 +102,40 @@
       (if (>= (v/y pos) min-y)
         [pos vel]
         [(v/make (v/x pos) min-y)
-         (collide-fledge vel path-y (u/path-val :m path (v/x pos)))]))))
+         (collide-path-fledge vel path-y (u/path-val :m path (v/x pos)))]))))
 
 (defn transition-pos
   "Calculate the position in the transition to outer space, clamped to [0,1]."
   [pos]
   (c/clamp (c/range->normal (v/y pos) transition-height space-height)))
+
+(defn limit-height
+  "Prevent Fledge's height from exceeding a certain value."
+  [y [pos0 vel0]]
+  [(if (> (v/y pos0) y)
+     (v/make (v/x pos0) y)
+     pos0)
+   vel0])
+
+(defn update-fledge-space
+  "Calculates a new position and velocity for Fledge like update-fledge-path,
+  except the calcuations are for outer space."
+  [[pos0 vel0] gravity galaxy]
+  (let [coef (c/normal->range (transition-pos pos0) 1 space-gravity-coef)
+        accel-down (v/make 0 (* -1 coef gravity))
+        accel (v/add accel-down (p/net-attraction pos0 galaxy))
+        vel (v/add vel0 accel)
+        pos (v/add pos0 vel)
+        planet (p/colliding-planet pos fledge-radius galaxy)]
+    (with-meta
+      (keep-going
+        min-x-speed
+        (limit-height
+          max-height
+          (if planet
+            [(p/stop-collision pos0 fledge-radius planet) v/zero]
+            [pos vel])))
+      (if planet {:collide true}))))
 
 ;;;;; Draw
 
@@ -139,6 +169,12 @@
         right (+ (v/x center) half-view-width)]
     [(* (Math/floor (/ left res)) res)
      (* (Math/ceil (/ right res)) res)]))
+
+(defn calc-galaxy-bounds
+  "Calculates the interval over which to draw the planets in the galaxy."
+  [center]
+  [(- (v/x center) c/half-width)
+   (+ (v/x center) c/half-width)])
 
 (defn calc-scale
   "Calculates the scale factor to draw with based on position."
@@ -180,15 +216,33 @@
     (assoc world
            :level-data level-data
            :paused true
+           :falling false
            :fledge [(:start level-data) v/zero])))
+
+(defn new-fledge
+  "Returns the new Fledge for the next state of the world (helper function)."
+  [world]
+  (let [fledge0 (:fledge world)
+        [pos _] fledge0
+        level-data (:level-data world)
+        below-space (= (transition-pos pos) 0)
+        gravity (if (q/mouse-state) gravity-fall gravity-fly)]
+    (if below-space
+      (update-fledge-path fledge0 gravity (:path level-data))
+      (update-fledge-space
+        fledge0
+        gravity
+        (if-not (:falling world)
+          (p/subgalaxy (calc-galaxy-bounds pos) (:galaxy level-data)))))))
 
 (defmethod c/update :game [world]
   (if (:paused world)
     world
-    (let [gravity (if (q/mouse-state) gravity-fall gravity-fly)
-          path (:path (:level-data world))
-          fledge (update-fledge (:fledge world) gravity path)]
-      (assoc world :fledge fledge))))
+    (let [fledge (new-fledge world)]
+      (assoc world
+             :fledge fledge
+             :falling (and (> (transition-pos (fledge 0)) 0)
+                           (or (:falling world) (:collide (meta fledge))))))))
 
 (defmethod c/input :game [world]
   (or (b/button-action buttons world)
@@ -200,13 +254,16 @@
   (let [[pos _] (:fledge world)
         scale (calc-scale pos)
         res (/ curve-resolution scale)
-        bounds (calc-path-bounds pos scale res)]
+        bounds (calc-path-bounds pos scale res)
+        galaxy-bounds (calc-galaxy-bounds pos)
+        transition (transition-pos pos)]
     (c/clear-background (calc-color pos))
     (if (:paused world) (draw-message paused-message))
     (b/draw-buttons buttons)
     (transform pos)
     (c/fill-color path-color)
-    (if (< (transition-pos pos) 0.5)
-      (u/draw-path (:path (:level-data world)) bounds res))
+    (if (= transition 0)
+      (u/draw-path (:path (:level-data world)) bounds res)
+      (p/draw-galaxy (:galaxy (:level-data world)) bounds (* 255 transition)))
     (c/fill-color fledge-color)
     (c/draw-circle pos fledge-radius)))

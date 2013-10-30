@@ -9,7 +9,7 @@
 
 ;;;;; Constants
 
-(def gravitational-constant 0.1)
+(def gravitational-constant 3)
 
 ;;;;; Planet
 
@@ -35,13 +35,21 @@
 (defn planet-collision?
   "Returns true if the circle is colliding with the planet."
   [pos radius planet]
-  (< (c/square (+ radius (:radius planet)))
-     (v/norm-sq (v/sub (:center planet) pos))))
+  (< (v/norm-sq (v/sub (:center planet) pos))
+     (c/square (+ radius (:radius planet)))))
+
+(defn stop-collision
+  "Returns a new position that will no longer be colliding with the planet."
+  [pos radius planet]
+  (let [connect (v/sub pos (:center planet))
+        direction (v/normalize connect)
+        dist (+ radius (:radius planet))]
+    (v/add (v/scale dist direction) (:center planet))))
 
 (defn draw-planet
   "Draws the planet as a circle."
-  [planet]
-  (c/fill-color (:color planet))
+  [planet alpha]
+  (c/fill-color (:color planet) alpha)
   (c/draw-circle (:center planet) (:radius planet)))
 
 ;;;;; Galaxy
@@ -53,30 +61,31 @@
 ;;; A "galaxy" refers to a collection of planets.
 
 (defn make-planet-translated
-  "Make a planet that is translated to the right by x."
-  [x planet-def]
-  (make-planet (v/add (:center planet-def) (v/make x 0))
+  "Make a planet that is translated by the given vector."
+  [v planet-def]
+  (make-planet (v/add (:center planet-def) v)
                (:size planet-def)
                (:color planet-def)))
 
-; TODO: add axis which is added to all y's.
 (defn make-galaxy
   "Makes a galaxy by repeating a collection of planets definitions forever. The
   separating space between successive repetitions of the planet collection is
   given by sep."
-  [sep planet-defs]
+  [axis sep planet-defs]
   (let [last-planet (last planet-defs)
-        width (+ (v/x (:center last-planet)) (:radius last-planet) sep)]
-    (concat
+        width (+ (v/x (:center last-planet)) (/ (:size last-planet) 2) sep)]
+    (flatten
       (map-indexed
         (fn [index p-defs]
-          (map (partial make-planet-translated (* index width)) p-defs))
+          (map (partial make-planet-translated (v/make (* index width) axis))
+               p-defs))
         (repeat planet-defs)))))
 
 (defn net-attraction
   "Returns the sum of the accelerations caused by each planet."
   [pos galaxy]
   (reduce v/add
+          v/zero
           (map (partial planet-attraction pos) galaxy)))
 
 (defn colliding-planet
@@ -90,10 +99,10 @@
   (take-while
     #(> end (- (v/x (:center %)) (:radius %)))
     (drop-while
-      #(> start (+ (v/x (:center %)) (:radius %))
-      galaxy))))
+      #(> start (+ (v/x (:center %)) (:radius %)))
+      galaxy)))
 
 (defn draw-galaxy
-  "Draws all of the planets in a galaxy."
-  [galaxy]
-  (doseq [planet galaxy] (draw-planet planet)))
+  "Draws all of the planets in a part of the galaxy that is inside the bounds."
+  [galaxy bounds alpha]
+  (doseq [planet (subgalaxy bounds galaxy)] (draw-planet planet alpha)))

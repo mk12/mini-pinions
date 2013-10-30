@@ -24,8 +24,9 @@
 
 ;;;;; Draw
 
-(defn fill-color [rgb]
-  (apply q/fill rgb))
+(defn fill-color
+  ([rgb] (apply q/fill rgb))
+  ([[r g b] a] (q/fill r g b a)))
 
 (defn fill-grey [x]
   (q/fill x))

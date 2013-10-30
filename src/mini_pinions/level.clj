@@ -8,7 +8,7 @@
             [mini-pinions.vector :as v]))
 
 (def levels
-  [{:start (v/make 400 400)
+  [{:start (v/make 5000 400)
     :path
     (u/make-path
       v/zero
@@ -38,10 +38,20 @@
         :width 150000}])
     :galaxy
     (p/make-galaxy
-      100
+      1500
+      800
       [{:center (v/make 20 30)
-        :size 50
-        :color [100 50 25]}])}])
+        :size 20
+        :color [100 50 25]}
+       {:center (v/make 50 -10)
+        :size 30
+        :color [255 255 255]}
+       {:center (v/make 200 200)
+        :size 100
+        :color [100 200 255]}
+       {:center (v/make 500 400)
+        :size 75
+        :color [255 200 210]}])}])
 
 (defn level-n
   "Returns the level data for the nth level."
