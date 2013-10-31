@@ -73,8 +73,8 @@
         height (/ (- (v/y size) total-padding-y) n-rows)
         button-size (v/make width height)
         start (v/sub center (v/div 2 (v/sub size button-size)))
-        delta-x-n #(* (+ width padding) (mod % n-rows))
-        delta-y-n #(* (+ height padding) (quot % n-rows))
+        delta-x-n #(* (+ width padding) (mod % n-cols))
+        delta-y-n #(* (+ height padding) (quot % n-cols))
         center-n #(v/add start (v/make (delta-x-n %) (delta-y-n %)))
         centers (map center-n (range n-buttons))]
     (map #(make-button shape (:text %1) (:action %1) %2 button-size (:color %1))

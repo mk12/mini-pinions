@@ -134,9 +134,13 @@ I have finally finished implementing the planets! All that is left (for the plan
 ## Home stretch
 
 **[30 Oct. 2013]**
-I spent a lot of time today working on planet collision and the score mechanism. I've added any last-minute features that I could, and then started tying up the loose ends. At 9:00 p.m. I stopped working on the code and started working on the data to drive the game: the levels.
+I spent a lot of time today working on planet collision and the score mechanism. I've added any last-minute features that I could, and then started tying up the loose ends. At 9:00 p.m. I stopped working on the code and started working on the data to drive the game: the levels. This took longer than I was expecting. I also added a screen that remembers past high scores, and I encountered a few bugs while doing that.
 
 ## Reflection
 
 **[31 Oct. 2013]**
-Something.
+Not surprisingly, I realize now that I overestimated in my proposal for _Mini Pinions_ (although, to be fair, I didn't know how long we would have so I thought it better to have too many things on the list rather than too few). I would have liked to implement a few more features, but the quality is more important than quantity. I did not spread myself too thin – of the features I chose to tackle, for each one I designed a thorough and proper solution. I am very happy with the visual product and with the code.
+
+The planets-above-the-sky idea turned out to be successful – more so than I had imagined. It makes the game unique, which is good because it doesn't have much originality elsewhere. I think the transitions between sky and space turned out especially great.
+
+I am glad that I decided to do this project in Clojure. Writing a game in a functional language was a great experience and I learned quite a bit.

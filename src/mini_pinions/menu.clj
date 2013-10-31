@@ -28,12 +28,16 @@
    "For serious points, reach escape velocity and visit OUTER SPACE!"
    "You'll get 10 times more points, but watch out! Planets exert their own"
    "gravitational pull, and if you're not careful you'll crash into one,"
-   "fall down, and take a 2000 point penalty."])
+   "fall down, and take a 500 point penalty."])
+
+(def scores-size 30)
 
 ;;;;; Menu button
 
 (defn menu-action [world]
-  (c/init {:name :menu, :game (:game world)}))
+  (c/init {:name :menu
+           :game (:game world)
+           :high-scores (:high-scores world)}))
 
 (def menu-button
   (b/make-control "<" menu-action b/top-left-1 [255 255 255]))
@@ -41,40 +45,54 @@
 ;;;;; Buttons
 
 (defmacro returning-action [world-name]
-  `(fn [world#] {:name ~world-name :game (:game world#)}))
+  `(fn [world#] {:name ~world-name
+                 :game (:game world#)
+                 :high-scores (:high-scores world#)}))
 
-(defmacro game-action [level]
-  `(fn [world#]
-     (let [game# (:game world#)]
-       (if (= (:level game#) ~level)
-        game#
-        (c/init {:name :game, :level ~level})))))
+(defn play-action [world]
+  "Creates (or retrieves) the game world when the play button is pressed."
+  (or (:game world)
+      (c/init {:name :game
+               :level 1
+               :high-scores (:high-scores world)})))
 
 (def main-buttons
   (b/make-button-stack
     (v/make c/half-width c/half-height)
-    (v/make 400 250)
+    (v/make 400 300)
     button-margin
     [{:text "Play"
-      :action #(or (:game %) (c/init {:name :game, :level 1}))
+      :action play-action
       :color [255 150 0]}
+     {:text "Levels"
+      :action (returning-action :level-select)
+      :color [100 100 100]}
      {:text "Instructions"
       :action (returning-action :instructions)
       :color [0 221 255]}
-     {:text "Levels"
-      :action (returning-action :level-select)
-      :color [100 100 100]}]))
+     {:text "Scores"
+      :action (returning-action :scores)
+      :color [200 200 200]}]))
+
+(defmacro level-action [level]
+  `(fn [world#]
+     (let [game# (:game world#)]
+       (if (= (:level game#) ~level)
+         game#
+         (c/init {:name :game
+                  :level ~level
+                  :high-scores (:high-scores world#)})))))
 
 (def level-buttons
   (conj
     (b/make-button-grid
-      :circle
+      :rect
       (v/make c/half-width c/half-height)
-      (v/make 300 300)
+      (v/make 300 200)
       button-margin
       3
-      (map #(hash-map :text (str %) :action (game-action %) :color [80 80 80])
-          (range 1 10)))
+      (map #(hash-map :text (str %) :action (level-action %) :color [80 80 80])
+           (range 1 7)))
     menu-button))
 
 ;;;;; Draw
@@ -99,6 +117,17 @@
   (c/draw-text copyright copyright-pos)
   (b/draw-buttons main-buttons))
 
+;;;;; Level select world
+
+(defmethod c/input :level-select [world]
+  (or (b/button-action level-buttons world)
+      world))
+
+(defmethod c/draw :level-select [world]
+  (c/clear-background background-color)
+  (draw-title "Level Select")
+  (b/draw-buttons level-buttons))
+
 ;;;;; Instructions world
 
 (defmethod c/input :instructions [world]
@@ -116,13 +145,28 @@
         (c/draw-text line (v/make c/half-width (+ 150 (* index 40)))))
       instructions-lines)))
 
-;;;;; Level select world
+;;;;; Scores world
 
-(defmethod c/input :level-select [world]
-  (or (b/button-action level-buttons world)
+(defn add-score
+  "Adds a score to the list of high scores. Only changes if it is a new best."
+  [level score high-scores]
+  (let [v (vec (or high-scores (repeat 6 0)))
+        index (- level 1)]
+    (assoc v index (max (v index) score))))
+
+(defmethod c/input :scores [world]
+  (or (b/button-action [menu-button] world)
       world))
 
-(defmethod c/draw :level-select [world]
+(defmethod c/draw :scores [world]
   (c/clear-background background-color)
-  (draw-title "Level Select")
-  (b/draw-buttons level-buttons))
+  (draw-title "Scores")
+  (b/draw-button menu-button)
+  (q/text-size scores-size)
+  (doall
+    (map-indexed
+      (fn [index score]
+        (c/draw-text (str "Level " (+ index 1) ": " (int score))
+                     (v/make c/half-width (+ 200 (* index 40)))))
+      (or (:high-scores world)
+          (repeat 6 0)))))

@@ -61,13 +61,14 @@
     (v/add start delta)))
 
 (defn make-path
-  "Makes a path by joining the curve definitions end to end. The position of the
-  first curve must be provided."
-  [start curve-defs]
-  (map #(make-curve
-          %1 (:height %2) (:direction %2) (:half-cycles %2) (:width %2))
-       (reductions curve-end start curve-defs)
-       curve-defs))
+  "Makes a path by joining the curve definitions end to end (repeated n times).
+  The position of the first curve must be provided."
+  [start n curve-defs]
+  (let [all-curve-defs (flatten (repeat n curve-defs))]
+    (map #(make-curve
+            %1 (:height %2) (:direction %2) (:half-cycles %2) (:width %2))
+        (reductions curve-end start all-curve-defs)
+         all-curve-defs)))
 
 (defn path-val
   "Calculate the y-value or m-value of the path at a particular x-value."

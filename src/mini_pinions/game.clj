@@ -16,7 +16,7 @@
 
 (def gravity-fly 0.2)
 (def gravity-fall 0.9)
-(def min-x-speed 1.2)
+(def min-x-speed 1.3)
 (def slide-threshold 0.7)
 (def elasticity 0.3)
 (def path-friction 0.987)
@@ -26,10 +26,10 @@
 (def space-height (* 2.5 c/height))
 (def max-height (* 4 c/height))
 
-(def height-score-coef 0.0005)
-(def speed-score-coef 0.005)
+(def height-score-coef 0.0003)
+(def speed-score-coef 0.003)
 (def space-score-multiplier 10)
-(def collision-score-penalty 2000)
+(def collision-score-penalty 500)
 
 (def fledge-radius 9)
 (def curve-resolution 8)
@@ -56,7 +56,9 @@
 ;;;;; Buttons
 
 (defn menu-action [world]
-  (c/init {:name :menu, :game (assoc world :paused true)}))
+  (c/init {:name :menu
+           :game (assoc world :paused true)
+           :high-scores (:high-scores world)}))
 
 (def buttons
   [(assoc m/menu-button :action menu-action)
@@ -301,7 +303,11 @@
   (if (or (:finished world) (:paused world))
     world
     (if (> (v/x (fledge-pos (:fledge world))) (:end (:level-data world)))
-      (assoc world :finished true)
+      (assoc world
+             :finished true
+             :high-scores (m/add-score (:level world)
+                                       (:score world)
+                                       (:high-scores world)))
       (let [fledge (new-fledge world)]
         (assoc world
               :fledge fledge
@@ -329,8 +335,9 @@
       (c/fill-color fledge-color)
       (c/draw-circle pos fledge-radius)
       (c/fill-color path-color)
-      (if (= transition 0)
-        (u/draw-path (:path level-data) bounds res)
+      (if (< transition 1)
+        (u/draw-path (:path level-data) bounds res))
+      (if (> transition 0)
         (p/draw-galaxy (:galaxy level-data) bounds (* 255 transition))))
     (text-color world)
     (cond
