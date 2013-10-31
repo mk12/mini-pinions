@@ -12,9 +12,9 @@
 (def background-color [160 240 255])
 (def button-margin 20)
 
-(def copyright "Copyright © 2013 Mitchell Kember. Subject to the MIT License.")
-(def copyright-size 16)
-(def copyright-pos (v/make c/half-width (- c/height 90)))
+(def copyright "Copyright © 2013 Mitchell Kember.\nSubject to the MIT License.")
+(def copyright-size 18)
+(def copyright-pos (v/make c/half-width (- c/height 80)))
 
 (def instructions-size 20)
 (def instructions-lines
@@ -34,7 +34,9 @@
 
 ;;;;; Menu button
 
-(defn menu-action [world]
+(defn menu-action
+  "Returns to the main menu, passing along cached data."
+  [world]
   (c/init {:name :menu
            :game (:game world)
            :high-scores (:high-scores world)}))
@@ -44,7 +46,9 @@
 
 ;;;;; Buttons
 
-(defmacro returning-action [world-name]
+(defmacro returning-action
+  "Makes an action that will go to the given world, passing along cached data."
+  [world-name]
   `(fn [world#] {:name ~world-name
                  :game (:game world#)
                  :high-scores (:high-scores world#)}))
@@ -147,10 +151,16 @@
 
 ;;;;; Scores world
 
+(defn score-list
+  "Returns its argument unless it is nil, in which case it returns a list
+  containing a zero for each level."
+  [high-scores]
+  (vec (or high-scores (repeat 6 0))))
+
 (defn add-score
   "Adds a score to the list of high scores. Only changes if it is a new best."
   [level score high-scores]
-  (let [v (vec (or high-scores (repeat 6 0)))
+  (let [v (score-list high-scores)
         index (- level 1)]
     (assoc v index (max (v index) score))))
 
@@ -168,5 +178,4 @@
       (fn [index score]
         (c/draw-text (str "Level " (+ index 1) ": " (int score))
                      (v/make c/half-width (+ 200 (* index 40)))))
-      (or (:high-scores world)
-          (repeat 6 0)))))
+      (score-list (:high-scores world)))))

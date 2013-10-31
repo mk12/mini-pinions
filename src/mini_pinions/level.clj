@@ -1,7 +1,7 @@
 ;;; Copyright 2013 Mitchell Kember. Subject to the MIT License.
 
 (ns mini-pinions.level
-  "Defines all the level data so that it doesn't clutter up mini-pinions.game."
+  "Defines all the level data: paths and galaxies."
   (:require [quil.core :as q]
             [mini-pinions.planet :as p]
             [mini-pinions.curve :as u]

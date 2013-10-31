@@ -32,7 +32,7 @@
 (def collision-score-penalty 500)
 
 (def fledge-radius 9)
-(def curve-resolution 8)
+(def curve-resolution 16)
 (def top-margin 10)
 
 (def sky-color [160 240 255])
@@ -55,7 +55,9 @@
 
 ;;;;; Buttons
 
-(defn menu-action [world]
+(defn menu-action
+  "Pauses the game and returns to the main menu, passing along cached data."
+  [world]
   (c/init {:name :menu
            :game (assoc world :paused true)
            :high-scores (:high-scores world)}))
@@ -304,10 +306,10 @@
     world
     (if (> (v/x (fledge-pos (:fledge world))) (:end (:level-data world)))
       (assoc world
-             :finished true
-             :high-scores (m/add-score (:level world)
-                                       (:score world)
-                                       (:high-scores world)))
+             :finished
+             true
+             :high-scores
+             (m/add-score (:level world) (:score world) (:high-scores world)))
       (let [fledge (new-fledge world)]
         (assoc world
               :fledge fledge

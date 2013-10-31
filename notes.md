@@ -143,4 +143,4 @@ Not surprisingly, I realize now that I overestimated in my proposal for _Mini Pi
 
 The planets-above-the-sky idea turned out to be successful – more so than I had imagined. It makes the game unique, which is good because it doesn't have much originality elsewhere. I think the transitions between sky and space turned out especially great.
 
-I am glad that I decided to do this project in Clojure. Writing a game in a functional language was a great experience and I learned quite a bit.
+I am glad that I decided to do this project in Clojure. Writing a game in a functional language was a great experience and I learned quite a bit. I will probably write about this in more detail when I have time.

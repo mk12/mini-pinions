@@ -8,7 +8,6 @@
             (mini-pinions menu game)))
 
 (defn setup []
-  (q/smooth)
   (q/rect-mode :corners)
   (q/text-align :center :center)
   (c/init-state :menu))
@@ -17,7 +16,7 @@
   (q/sketch
     :title "Mini Pinions"
     :size [c/width c/height]
-    :renderer :opengl
+    :renderer :p2d
     :setup setup
     :mouse-pressed c/input-world
     :key-pressed c/input-world

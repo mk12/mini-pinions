@@ -13,13 +13,19 @@
 
 ;;;;; Macros
 
-(defmacro dbg [x]
+(defmacro dbg
+  "Debugs an expression by printing its argument and returning it."
+  [x]
   `(let [x# ~x] (println "dbg:" '~x "=" x#) x#))
 
-(defmacro restore-style [& body]
+(defmacro restore-style
+  "Pushes and pops the style so that it is restored after evaluating body."
+  [& body]
   `(do (q/push-style) ~@body (q/pop-style)))
 
-(defmacro restore-matrix [& body]
+(defmacro restore-matrix
+  "Pushes and pops the matrix so that it is restored after evaluating body."
+  [& body]
   `(do (q/push-matrix) ~@body (q/pop-matrix)))
 
 ;;;;; Draw
@@ -64,7 +70,7 @@
   ([start end x] (max start (min end x))))
 
 (defn range->range
-  "Maps x from the range [a,b] to the range [n,m]."
+  "Maps x from the range [a,b] to the range [n,m]. Does not clamp."
   [x a b n m]
   (-> (- x a)
       (/ (- b a))
