@@ -12,6 +12,24 @@
 (def background-color [160 240 255])
 (def button-margin 20)
 
+(def copyright "Copyright © 2013 Mitchell Kember. Subject to the MIT License.")
+(def copyright-size 16)
+(def copyright-pos (v/make c/half-width (- c/height 90)))
+
+(def instructions-size 20)
+(def instructions-lines
+  ["Fledge is a special bird. His pinions (wings) are so mini he can't fly."
+   "Instead, he has to take advantage of gravity to slide and gain speed."
+   ""
+   "Control Fledge by CLICKING THE MOUSE to make him nosedive,"
+   "and time it just right to SLIDE along a valley each time."
+   "Get to the end of the level with as high a score as possible!"
+   ""
+   "For serious points, reach escape velocity and visit OUTER SPACE!"
+   "You'll get 10 times more points, but watch out! Planets exert their own"
+   "gravitational pull, and if you're not careful you'll crash into one,"
+   "fall down, and take a 2000 point penalty."])
+
 ;;;;; Menu button
 
 (defn menu-action [world]
@@ -77,6 +95,8 @@
 (defmethod c/draw :menu [world]
   (c/clear-background background-color)
   (draw-title "Mini Pinions")
+  (q/text-size copyright-size)
+  (c/draw-text copyright copyright-pos)
   (b/draw-buttons main-buttons))
 
 ;;;;; Instructions world
@@ -89,9 +109,12 @@
   (c/clear-background background-color)
   (draw-title "Instructions")
   (b/draw-button menu-button)
-  (q/text-size 16)
-  (c/draw-text "Later on, there will be instructions here."
-               (v/make c/half-width 300)))
+  (q/text-size instructions-size)
+  (doall
+    (map-indexed
+      (fn [index line]
+        (c/draw-text line (v/make c/half-width (+ 150 (* index 40)))))
+      instructions-lines)))
 
 ;;;;; Level select world
 
