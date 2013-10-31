@@ -8,7 +8,8 @@
             [mini-pinions.vector :as v]))
 
 (def levels
-  [{:start (v/make 5000 400)
+  [{:start (v/make 7000 400)
+    :end 14500
     :path
     (u/make-path
       v/zero
@@ -34,8 +35,8 @@
         :width 70}
        {:height 200
         :direction :up
-        :half-cycles 600
-        :width 150000}])
+        :half-cycles 60
+        :width 15000}])
     :galaxy
     (p/make-galaxy
       1500

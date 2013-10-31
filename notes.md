@@ -129,9 +129,14 @@ I am still working on the planets. It is tricky to find a combination of differe
 
 I spent a while puzzling over a strange bug. Some of the planets would randomly appear in the middle of the screen instead of coming in from the edge. I have the planets in an infinite list (Clojure has lazy sequences), but I was getting the right planets for drawing. The problem was that I had defined them out of order in the level data, and my sub galaxy function assumed that they were ordered by their x-values.
 
-I have finally finished implementing the planets! All that is left (for the planet side of things) is to tweak some values and actually make some more levels. I don't think I will have time to add springy platforms to the game (I'm not sure how much it would have added anyway -- it might have made it too easy, and there is already plenty going on in the game). I will spend my remaining time implementing scores, maybe power-ups, and polishing everything in general. Also, I will need to make at least five or eight solid levels. It doesn't look like I'll have time to add an interactive level editor. I am really happy with what I have accomplished so far, though.
+I have finally finished implementing the planets! All that is left (for the planet side of things) is to tweak some values and actually make some more levels. I don't think I will have time to add springy platforms to the game (I'm not sure how much it would have added anyway – it might have made it too easy, and there is already plenty going on in the game). I will spend my remaining time implementing scores, maybe power-ups, and polishing everything in general. Also, I will need to make at least five or eight solid levels. It doesn't look like I'll have time to add an interactive level editor. I am really happy with what I have accomplished so far, though.
 
 ## Home stretch
 
 **[30 Oct. 2013]**
+I spent a lot of time today working on planet collision and the score mechanism. I've added any last-minute features that I could, and then started tying up the loose ends. At 9:00 p.m. I stopped working on the code and started working on the data to drive the game: the levels.
+
+## Reflection
+
+**[31 Oct. 2013]**
 Something.

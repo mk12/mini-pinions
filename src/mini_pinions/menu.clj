@@ -25,32 +25,45 @@
 (defmacro returning-action [world-name]
   `(fn [world#] {:name ~world-name :game (:game world#)}))
 
-(defn play-action [world]
-  (if-let [game (:game world)]
-    game
-    (c/init {:name :game, :level 1})))
+(defmacro game-action [level]
+  `(fn [world#]
+     (let [game# (:game world#)]
+       (if (= (:level game#) ~level)
+        game#
+        (c/init {:name :game, :level ~level})))))
 
-(def buttons
+(def main-buttons
   (b/make-button-stack
     (v/make c/half-width c/half-height)
-    (v/make 400 300)
+    (v/make 400 250)
     button-margin
     [{:text "Play"
-      :action play-action
+      :action #(or (:game %) (c/init {:name :game, :level 1}))
       :color [255 150 0]}
      {:text "Instructions"
       :action (returning-action :instructions)
       :color [0 221 255]}
      {:text "Levels"
       :action (returning-action :level-select)
-      :color [255 255 255]}
-     {:text "Level Editor"
-      :action (returning-action :level-editor)
       :color [100 100 100]}]))
+
+(def level-buttons
+  (conj
+    (b/make-button-grid
+      :circle
+      (v/make c/half-width c/half-height)
+      (v/make 300 300)
+      button-margin
+      3
+      (map #(hash-map :text (str %) :action (game-action %) :color [80 80 80])
+          (range 1 10)))
+    menu-button))
 
 ;;;;; Draw
 
-(defn draw-title [title]
+(defn draw-title
+  "Draws a title in large text in the top-center region."
+  [title]
   (q/text-size 50)
   (c/fill-grey 0)
   (c/draw-text title (v/make c/half-width 75)))
@@ -58,13 +71,13 @@
 ;;;;; Menu world
 
 (defmethod c/input :menu [world]
-  (or (b/button-action buttons world)
+  (or (b/button-action main-buttons world)
       world))
 
 (defmethod c/draw :menu [world]
   (c/clear-background background-color)
   (draw-title "Mini Pinions")
-  (b/draw-buttons buttons))
+  (b/draw-buttons main-buttons))
 
 ;;;;; Instructions world
 
@@ -83,10 +96,10 @@
 ;;;;; Level select world
 
 (defmethod c/input :level-select [world]
-  (or (b/button-action [menu-button] world)
+  (or (b/button-action level-buttons world)
       world))
 
 (defmethod c/draw :level-select [world]
   (c/clear-background background-color)
   (draw-title "Level Select")
-  (b/draw-button menu-button))
+  (b/draw-buttons level-buttons))

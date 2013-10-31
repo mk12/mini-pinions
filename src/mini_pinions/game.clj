@@ -26,8 +26,13 @@
 (def space-height (* 2.5 c/height))
 (def max-height (* 4 c/height))
 
+(def height-score-coef 0.0005)
+(def speed-score-coef 0.005)
+(def space-score-multiplier 10)
+(def collision-score-penalty 2000)
+
 (def fledge-radius 9)
-(def curve-resolution 40)
+(def curve-resolution 8)
 (def top-margin 10)
 
 (def sky-color [160 240 255])
@@ -36,14 +41,17 @@
 (def fledge-color [210 110 0])
 
 (def paused-message "Click To Play")
+(def finished-message "Level Completed!")
 (def message-size 40)
-(def message-color [0 0 50])
 (def message-pos [c/half-width (/ c/half-height 2)])
 
-(def score-text-size 25)
-(def score-pos (v/make c/half-width (+ score-text-size 5)))
-(def score-multiplier-text-size 20)
-(def score-multiplier-pos (v/make c/half-width 30))
+(def score-size 25)
+(def score-pos (v/make c/half-width (+ score-size 5)))
+(def score-multiplier-size 20)
+(def score-multiplier-pos (v/make c/half-width 55))
+
+(def completion-size 15)
+(def completion-pos (v/make 20 (- c/height 15)))
 
 ;;;;; Buttons
 
@@ -69,6 +77,11 @@
   "Gets the position component of the Fledge value."
   [[pos _]]
   pos)
+
+(defn fledge-vel
+  "Gets the velocity component of the Fledge value."
+  [[_ vel]]
+  vel)
 
 (defn reflect
   "Reflects vector v across normal vector n."
@@ -149,23 +162,32 @@
 
 ;;;;; Draw
 
+(defn text-color
+  "Sets the fill color to one that will contrast with the background."
+  [world]
+  (c/fill-grey (* 255 (transition-pos (fledge-pos (:fledge world))))))
+
 (defn draw-message
   "Draws a text message prominently."
   [message]
-  (c/fill-color message-color)
   (q/text-size message-size)
   (c/draw-text message message-pos))
 
-(defn draw-score
-  "Draws the score in the corner of the screen."
+(defn draw-hud-text
+  "Draws the HUD text: score and percentage completion."
   [world]
-  (let [transition (transition-pos (fledge-pos (:fledge world)))]
-    (c/fill-grey (* 255 transition))
-    (q/text-size score-text-size)
+  (let [pos (fledge-pos (:fledge world))
+        transition (transition-pos pos)
+        multiplier (int (* transition space-score-multiplier))
+        last-curve (last (:path (:level-data world)))
+        end (:end (:level-data world))]
+    (q/text-size completion-size)
+    (c/draw-text (str (int (* (/ (v/x pos) end) 100)) "%") completion-pos)
+    (q/text-size score-size)
     (c/draw-text (str (int (:score world))) score-pos)
-    (when (> transition 0)
-      (q/text-size score-multiplier-text-size)
-      (c/draw-text (str "x" (int (* transition 10))) score-multiplier-pos))))
+    (when (and (>= multiplier 2) (not (:falling world)))
+      (q/text-size score-multiplier-size)
+      (c/draw-text (str "x" multiplier) score-multiplier-pos))))
 
 (defn lerp-color
   "Linearly interpolates between two colours."
@@ -234,14 +256,18 @@
 
 (defn score-earned
   "Calculates the value to be added to the current score."
-  [fledge]
-  (let [pos (fledge-pos fledge)
+  [world]
+  (let [fledge (:fledge world)
+        pos (fledge-pos fledge)
+        vel (fledge-vel fledge)
         collide (:collide (meta fledge))
-        transition (transition-pos pos)]
-    (max 0
-         (+ (* 0.001 (v/y pos))
-            (* 0.01 transition (v/y pos))
-            (if collide -2000 0)))))
+        transition (transition-pos pos)
+        falling (:falling world)
+        multiplier (if falling 1 (* transition space-score-multiplier))]
+    (+ (* (max 1 multiplier)
+          (+ (* height-score-coef (v/y pos))
+             (* speed-score-coef (v/norm vel))))
+       (if collide (- collision-score-penalty) 0))))
 
 ;;;;; World
 
@@ -252,6 +278,7 @@
            :paused true
            :falling false
            :score 0
+           :finished false
            :fledge [(:start level-data) v/zero])))
 
 (defn new-fledge
@@ -271,14 +298,16 @@
           (p/subgalaxy (calc-galaxy-bounds pos) (:galaxy level-data)))))))
 
 (defmethod c/update :game [world]
-  (if (:paused world)
+  (if (or (:finished world) (:paused world))
     world
-    (let [fledge (new-fledge world)]
-      (assoc world
-             :fledge fledge
-             :score (+ (:score world) (score-earned fledge))
-             :falling (and (> (transition-pos (fledge-pos fledge)) 0)
-                           (or (:falling world) (:collide (meta fledge))))))))
+    (if (> (v/x (fledge-pos (:fledge world))) (:end (:level-data world)))
+      (assoc world :finished true)
+      (let [fledge (new-fledge world)]
+        (assoc world
+              :fledge fledge
+              :score (max 0 (+ (:score world) (score-earned world)))
+              :falling (and (> (transition-pos (fledge-pos fledge)) 0)
+                            (or (:falling world) (:collide (meta fledge)))))))))
 
 (defmethod c/input :game [world]
   (or (b/button-action buttons world)
@@ -303,6 +332,9 @@
       (if (= transition 0)
         (u/draw-path (:path level-data) bounds res)
         (p/draw-galaxy (:galaxy level-data) bounds (* 255 transition))))
-    (if (:paused world) (draw-message paused-message))
-    (b/draw-buttons buttons)
-    (draw-score world)))
+    (text-color world)
+    (cond
+      (:finished world) (draw-message finished-message)
+      (:paused world) (draw-message paused-message))
+    (draw-hud-text world)
+    (b/draw-buttons buttons)))

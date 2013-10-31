@@ -64,9 +64,22 @@
   rectangle (defined by center and size), an amount of padding between buttons,
   the number of columns, and a collection of maps with keys :text, :action, and
   :color."
-  [shape center size padding n-cols butten-defs]
-  ;; Use partition
-  nil)
+  [shape center size padding n-cols button-defs]
+  (let [n-buttons (count button-defs)
+        n-rows (quot n-buttons n-cols)
+        total-padding-x (* (- n-cols 1) padding)
+        total-padding-y (* (- n-rows 1) padding)
+        width (/ (- (v/x size) total-padding-x) n-cols)
+        height (/ (- (v/y size) total-padding-y) n-rows)
+        button-size (v/make width height)
+        start (v/sub center (v/div 2 (v/sub size button-size)))
+        delta-x-n #(* (+ width padding) (mod % n-rows))
+        delta-y-n #(* (+ height padding) (quot % n-rows))
+        center-n #(v/add start (v/make (delta-x-n %) (delta-y-n %)))
+        centers (map center-n (range n-buttons))]
+    (map #(make-button shape (:text %1) (:action %1) %2 button-size (:color %1))
+         button-defs
+         centers)))
 
 ;;;;; Mouse
 
