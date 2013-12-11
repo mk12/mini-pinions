@@ -11,6 +11,6 @@ Fledge is special bird. His pinions are so mini that he can't fly on his own. In
 
 ## License
 
-Copyright © 2013 Mitchell Kember
+© 2013 Mitchell Kember
 
 Mini Pinions is available under the MIT License; see [LICENSE](LICENSE.md) for details.
