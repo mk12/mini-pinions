@@ -99,7 +99,7 @@
   "Returns the button under the mouse cursor if there is one and the mouse
   button is pressed, otherwise returns nil."
   [buttons]
-  (if (q/mouse-state)
+  (if (q/mouse-pressed?)
     (first (filter mouse-in-button? buttons))))
 
 ;;;;; Draw

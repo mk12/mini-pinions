@@ -292,7 +292,7 @@
         [pos _] fledge0
         level-data (:level-data world)
         below-space (= (transition-pos pos) 0)
-        gravity (if (q/mouse-state) gravity-fall gravity-fly)]
+        gravity (if (q/mouse-pressed?) gravity-fall gravity-fly)]
     (if below-space
       (update-fledge-path fledge0 gravity (:path level-data))
       (update-fledge-space
@@ -319,7 +319,7 @@
 
 (defmethod c/input :game [world]
   (or (b/button-action buttons world)
-      (if (and (:paused world) (q/mouse-state))
+      (if (and (:paused world) (q/mouse-pressed?))
         (assoc world :paused false))
       world))
 
